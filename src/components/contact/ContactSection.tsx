@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { motion } from "framer-motion";
+import { motion, Transition } from "framer-motion";
 import styles from "./ContactSection.module.css";
 import Letter from "@/components/contact/Letter";
 import { AnimatedThreadStroke } from "@/components/work/AnimatedThreadStroke";
@@ -35,19 +35,15 @@ export default function ContactSection() {
   
   // Stato per controllare quale forma stiamo mostrando
   const [isMorphed, setIsMorphed] = useState(false);
-  const [isInteractable, setIsInteractable] = useState(false); // <-- NUOVO STATO
+  const [isInteractable, setIsInteractable] = useState(false); 
 
-
-    useEffect(() => {
+  useEffect(() => {
     if (isMorphed) {
-    
-        const timer = setTimeout(() => setIsInteractable(true), 2000); 
-        
-        return () => clearTimeout(timer);
-    } else {
-        setIsInteractable(false); 
+      const timer = setTimeout(() => setIsInteractable(true), 2000); 
+      return () => clearTimeout(timer);
     }
-    }, [isMorphed]);
+    // Rimosso l'else: non serve forzare a false perché lo è già di default.
+  }, [isMorphed]);
 
   useEffect(() => {
     const section = sectionRef.current;
@@ -75,7 +71,6 @@ export default function ContactSection() {
       const startPt = { x: cx, y: cy1 + offset};
 
       // Curva 1: Attorno al perno superiore.
-      // Il filo arriva, va a DESTRA (0), passa SOPRA (-Math.PI/2) e finisce a SINISTRA (-Math.PI).
       const curve1 = sampleArc({ x: cx, y: cy1 }, R, 0, -Math.PI, 12);
       
       const curve2 = sampleArc({ x: cx, y: cy2 }, R,  0, Math.PI, 12);
@@ -100,7 +95,7 @@ export default function ContactSection() {
       ];
       
       // =========================================
-      // CREAZIONE DELLA LINEA DRITTA (Esattamente 30 Punti)
+      // CREAZIONE DELLA LINEA DRITTA
       // =========================================
       const simpleStartX = -100;
       const simpleEndX = elbowTurn.x;
@@ -118,7 +113,6 @@ export default function ContactSection() {
         endPt
       ];
 
-      // Salviamo nello stato. isMorphed deciderà quale usare!
       setPaths({ straight: simplePath, sCurve: figure8Path, metrics, buttonOffset: offset });
     };
 
@@ -132,7 +126,6 @@ export default function ContactSection() {
     };
   }, []);
 
-  // Animazione iniziale: aspetta 1.5 secondi e poi trasforma la linea in S
   useEffect(() => {
     if (!paths) return;
     const timer = setTimeout(() => setIsMorphed(true), 1500);
@@ -143,44 +136,40 @@ export default function ContactSection() {
     <motion.section 
       ref={sectionRef} 
       className={styles.section} 
-      whileInView={() => setIsMorphed(true)}
+      onViewportEnter={() => setIsMorphed(true)}
       viewport={{ once: true }}
       style={{ cursor: "pointer" }}
     >
-    <div className={styles.titles}>
-      <h4 className={styles.title}>Contact Me</h4>
-      <p className={styles.description}>The thread ends here, but our conversation is just starting. Hover or tap the envelope to open it and get in touch.</p>
-    </div>
+      <div className={styles.titles}>
+        <h4 className={styles.title}>Contact Me</h4>
+        <p className={styles.description}>The thread ends here, but our conversation is just starting. Hover or tap the envelope to open it and get in touch.</p>
+      </div>
       
       <Letter buttonOffset={paths?.buttonOffset ?? BUTTON_OFFSET_PX} isMorphed={isInteractable}/>
 
-      {/* Filo tra la busta (z-index 1) e i bottoni di cartone (z-index 3). */}
       {paths && (
         <svg className={styles.svgLayer}>
           <AnimatedThreadStroke 
-            // Inizia dritto (false), poi passa a S (true)
+            // @ts-expect-error: Framer Motion motion.path tipi in conflitto con l'array di coordinate Point[] custom
             points={isMorphed ? paths.straight : paths.sCurve} 
             thread={paths.metrics} 
             shadow={true}
-            initial={false} // Impedisce l'animazione di mount interno se gestita da Framer Motion
+            initial={false}
             transition={{ 
-
               type: "spring",
               stiffness: 20,
               damping: 5,
               delay: 1.5,
               duration: 1.2, 
               ease: "easeInOut" 
-            }}
+            } as Transition}
           />
         </svg>
       )}
 
-      {/* LAYER IN PRIMO PIANO: Il Contenuto */}
       <div className={styles.content}>
-         {/* (Rimetti qui il titolo, sottotitolo e i pulsanti social) */}
+         {/* Contenuto eventuale */}
       </div>
-
     </motion.section>
   );
 }
