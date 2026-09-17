@@ -19,11 +19,11 @@ export default function TitleThread() {
     transition: {
       duration: 1.5,
       ease: "easeInOut",
-      type: "spring",
+      type: "spring" ,
       stiffness: 80,
       damping: 12,
       mass: 1,
-    },
+    } as const,
     fill: "transparent",
     strokeLinecap: "round" as const,
     strokeLinejoin: "round" as const,
