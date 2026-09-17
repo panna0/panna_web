@@ -1,0 +1,43 @@
+.section {
+    position: relative;
+    width: 100%;
+    min-height: 100svh; /* O l'altezza della tua sezione */
+    display: flex;
+    align-items: center;  /* Questo assicura che il passaporto sia a yMid (h/2) */
+    justify-content: center;
+    overflow: visible; /* Lascia fluire il filo nelle sezioni adiacenti */
+  }
+  
+  /* --- IL FILO (Background) --- */
+  .threadBackground {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0; /* Dietro a tutto */
+    pointer-events: none; /* Ignora i click */
+  
+    /* Inietta le variabili CSS richieste dal tuo ThreadStroke */
+    --thread-color: #e5e5e5;       /* Cambialo nel rosso del tuo brand o colore desiderato */
+    --thread-highlight: rgba(255, 255, 255, 0.7);
+    --thread-shade: rgba(0, 0, 0, 0.15);
+    --thread-outline: #171717;
+    --thread-shadow: rgba(0, 0, 0, 0.2);
+  }
+  
+  .threadSvg {
+    width: 100%;
+    height: 100%;
+    display: block;
+    overflow: visible;
+  }
+  
+  /* --- IL CONTENUTO (Foreground) --- */
+  .contentWrapper {
+    position: relative;
+    z-index: 10; /* Sopra al filo */
+    width: 100%;
+    display: flex;
+    justify-content: center;
+  }

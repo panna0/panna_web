@@ -1,0 +1,484 @@
+.section {
+  position: relative;
+  overflow: visible;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100svh;
+}
+
+.sectionSealed {
+  z-index: 400;
+}
+
+.hero {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  box-sizing: border-box;
+  width: 50%;
+  min-height: 80svh;
+  height: 60%;
+  align-items: stretch;
+  justify-content: stretch;
+  padding: 5.5rem 1.25rem 2rem;
+  
+}
+
+.sheet {
+  position: relative;
+  display: flex;
+  width: 100%;
+  min-height: calc(80svh - 7.5rem);
+  flex: 1;
+  align-items: stretch;
+  background-color: #faeed7;
+  border: 2px solid #000000;
+  border-radius: 2rem;
+  box-shadow: 8px 8px 0 rgba(0, 0, 0, 0.3);
+  overflow: hidden;
+}
+
+.sheet::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image:
+    radial-gradient(circle at 18% 12%, rgba(255, 255, 255, 0.55) 0%, transparent 42%),
+    repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 27px,
+      rgba(213, 200, 173, 0.35) 28px
+    );
+}
+
+.sheetInner {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  box-sizing: border-box;
+  width: 100%;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  padding: clamp(2rem, 8vh, 5rem) clamp(1.5rem, 6vw, 5rem);
+  border: 3px solid #d5c8ad;
+  margin: 1rem;
+  border-radius: 1rem;
+
+}
+
+.stamp {
+  display: flex;
+  width: min(22rem, 72vw);
+  aspect-ratio: 1;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border: 6px double var(--magenta);
+  border-radius: 50%;
+  color: var(--magenta);
+  transform: rotate(-8deg);
+  mix-blend-mode: multiply;
+  box-shadow: 4px 4px 0 rgba(0, 0, 0, 0.12);
+}
+
+.stampName {
+  margin: 0;
+  font-family: var(--font-pally);
+  font-size: clamp(3.4rem, 8vw, 5.6rem);
+  font-weight: 700;
+  letter-spacing: -0.04em;
+  line-height: 0.9;
+  text-transform: uppercase;
+}
+
+.stampRole {
+  margin: 0.35rem 0 0;
+  font-family: var(--font-pally);
+  font-size: clamp(0.85rem, 2vw, 1.15rem);
+  font-weight: 500;
+  letter-spacing: 0.18em;
+  text-transform: lowercase;
+}
+
+.catchphrase {
+  margin: 0;
+  width: 100%;
+  padding-inline: 4.5rem 1rem;
+  color: #171717;
+  font-family: var(--font-pally);
+  font-size: clamp(1.1rem, 2.4vw, 1.6rem);
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-align: center;
+  text-transform: uppercase;
+}
+
+.bridge {
+  position: absolute;
+  inset: 0 0 auto 0;
+  z-index: 2;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  pointer-events: none;
+}
+
+.bridgeSvg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  overflow: visible;
+  pointer-events: none;
+}
+
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 400;
+  overflow: hidden;
+  touch-action: none;
+  overscroll-behavior: none;
+  user-select: none;
+}
+
+.panel {
+  position: absolute;
+  left: 0;
+  right: 0;
+  background-color: #ce976b;
+  /* background-image:
+    radial-gradient(#b88860 2px, transparent 2.5px),
+    radial-gradient(#e1a97b 2px, transparent 2.5px); */
+  background-size: 30px 30px;
+  background-position: 0 0, 10px 10px;
+  border: 2px solid #000000;
+  box-shadow: 8px 8px 0 rgba(0, 0, 0, 0.28);
+  will-change: transform;
+}
+
+.topPanel {
+  top: 0;
+  height: 70%;
+  border-bottom-width: 2px;
+  z-index: 1;
+}
+
+.bottomPanel {
+  bottom: 0;
+  height: 30%;
+  border-top-width: 2px;
+  z-index: 1;
+}
+
+.folderLabel {
+  position: absolute;
+  top: 14%;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  min-width: 9rem;
+  flex-direction: column;
+  gap: 0.35rem;
+  padding: 1rem;
+  background: #faeed7;
+  border-radius: 1rem;
+  border: 2px solid #000000;
+  box-shadow: 4px 4px 0 rgba(0, 0, 0, 0.3);
+  width: 40vw;
+  height: 45vh;
+}
+
+.folderLabelInner {
+  display: flex;
+  flex-direction: column;
+  border-radius: 0.5rem;
+  border: 2px solid #000000;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.tabRow {
+  width: 100%;
+}
+
+.top {
+  border-bottom: 2px solid #000000;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  h3{
+    font-family: var(--font-pally);
+    font-size: clamp(1.9rem, 4vw, 2.8rem);
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: #000000;
+  }
+}
+
+.middle {
+  height: 180%;
+  padding: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  h4{
+    font-family: var(--font-pally);
+    font-size: clamp(4.5rem, 13.5vw, 9rem); 
+    letter-spacing: 0.04em;
+    line-height: 1;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: #000000;
+  }
+}
+
+.bottom {
+  border-top: 2px solid #000000;
+  height: 100%;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+
+}
+
+.tabRowInner {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.5rem;
+
+  h3{
+    font-family: var(--font-pally);
+    font-size: clamp(0.8rem, 1.5vw, 1.2rem);
+    font-weight: 700;
+    letter-spacing: 0.1em;
+  }
+  span{
+    font-family: var(--font-pally);
+    font-size: clamp(1.2rem, 2.5vw, 2.2rem);
+    font-weight: 700;
+    letter-spacing: 0rem;
+    text-transform: uppercase;
+  }
+}
+
+.right {
+  border-left: 2px solid #000000;
+}
+
+
+.folderIndex {
+  font-family: var(--font-pally);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+}
+
+.folderTitle {
+  font-family: var(--font-pally);
+  font-size: clamp(1.4rem, 3vw, 2.2rem);
+  font-weight: 700;
+  letter-spacing: -0.04em;
+  text-transform: uppercase;
+}
+
+.stringLayer {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  overflow: visible;
+  pointer-events: none;
+}
+
+.stringSvg {
+  overflow: visible;
+  pointer-events: none;
+  filter: drop-shadow(8px 8px 0 rgba(23, 23, 23, 0.16));
+}
+
+.sealAnchor {
+  position: absolute;
+  left: 50%;
+  z-index: 3;
+  pointer-events: none;
+  transform: translateX(-50%);
+  
+}
+
+.seal {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  pointer-events: none;
+  will-change: clip-path, transform;
+  padding: 1rem;
+}
+
+.sealFace {
+  position: relative;
+  display: flex;
+  box-sizing: border-box;
+  width: 100%;
+  height: 100%;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background-color: #2A9D8F;
+  border: 2px solid #000000;
+  
+  border-radius: 50%;
+  box-shadow:
+    6px 6px 0 rgba(0, 0, 0, 0.3),
+    inset 0 0 0 7px #faeed7;
+}
+
+.sealRing {
+  position: absolute;
+  inset: 16%;
+  border: 2px dashed #000000;
+  border-radius: 50%;
+  opacity: 0.7;
+}
+
+.sealTitle {
+  position: relative;
+  font-family: var(--font-pally);
+  font-size: clamp(1.05rem, 2.4vw, 1.55rem);
+  font-weight: 700;
+  letter-spacing: -0.04em;
+  text-transform: uppercase;
+}
+
+.sealHint {
+  position: relative;
+  margin-top: 0.15rem;
+  font-family: var(--font-pally);
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+}
+
+.handle {
+  position: absolute;
+  z-index: 5;
+  display: flex;
+  width: 88px;
+  height: 88px;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  cursor: grab;
+  touch-action: none;
+}
+
+.handle:active {
+  cursor: grabbing;
+}
+
+.handleHit {
+  width: 22px;
+  height: 22px;
+  border: 2px solid #000000;
+  border-radius: 50%;
+  background: var(--thread-color);
+  box-shadow:
+    4px 4px 0 rgba(0, 0, 0, 0.28),
+    inset -3px -3px 0 rgba(0, 0, 0, 0.18),
+    inset 2px 2px 0 rgba(255, 255, 255, 0.35);
+  pointer-events: none;
+}
+
+.pullTag {
+  margin-top: 0.35rem;
+  padding: 0.12rem 0.42rem 0.16rem;
+  background: #faeed7;
+  border: 2px solid #000000;
+  box-shadow: 3px 3px 0 rgba(0, 0, 0, 0.3);
+  font-family: var(--font-pally);
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  pointer-events: none;
+}
+
+.dragCatcher {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: calc(70% - 90px);
+  z-index: 4;
+  height: 180px;
+  cursor: grab;
+  touch-action: none;
+}
+
+.dragCatcher:active {
+  cursor: grabbing;
+}
+
+@media (max-width: 768px) {
+  .hero {
+    padding: 5.75rem 0.85rem 1.5rem;
+    width: 90%;
+    height: 60%;
+  }
+
+  .sheetInner {
+    margin: 0.65rem;
+    padding: 1.4rem 1rem 1.6rem;
+  }
+
+  .stamp {
+    width: min(16rem, 78vw);
+  }
+
+  .sealFace {
+    box-shadow:
+    6px 6px 0 rgba(0, 0, 0, 0.3),
+    inset 0 0 0 3px #faeed7;
+  }
+
+  
+
+  .pullTag {
+    font-size: 0.6rem;
+  }
+
+  .dragCatcher {
+    top: calc(70% - 100px);
+    height: 200px;
+  }
+
+  .folderLabel{
+    position: absolute;
+    top: 15%;
+    left: 50%;
+    height: 40vh;
+    transform: translateX(-50%);
+    width: 80vw;
+  }
+
+  .top{
+    h3{
+      font-size: clamp(1.4rem, 3vw, 2.2rem);
+    }
+  }
+}

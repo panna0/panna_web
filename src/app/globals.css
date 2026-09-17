@@ -1,8 +1,41 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #7BD7A2;
+  --foreground: black;
+
+  /*
+    Il filo conduttore del sito: un'unica fonte di verità per il rail dei
+    servizi, i segmenti che passano sopra le card e la cornice dei lavori.
+    Gli spessori sono letti anche da JS (ThreadFrame) per disegnare l'SVG,
+    quindi vanno dichiarati qui e non duplicati nei moduli.
+  */
+  --blue: #2488C4;
+  --magenta: #92326A;
+  --green: #2A9D8F;
+  --pink: #FEB7BB;
+
+
+  --thread-color: #F2707B;
+  --thread-highlight: #FF9BA4;
+  --thread-shade: #BF656D;
+  --thread-outline: #000000;
+  /*
+    Unique source of truth for the pink string. Literal px values (not nested
+    var()) so JS can read them with getComputedStyle + parseFloat.
+  */
+  --pink-string-thickness: 30px;
+  --thread-thickness: 30px;
+  --thread-highlight-width: 5px;
+  --thread-shade-width: 4px;
+  --thread-outline-width: 2px;
+  /* Ombra piatta, nello stesso spirito di quella delle card. */
+  --thread-shadow: rgba(23, 23, 23, 0.14);
+  --work-thread-x: 22vw;
+
+  /* Ferramenta: tondini delle card e puntine della bacheca. */
+  --pin-body: #626262;
+  --pin-core: #000000;
 }
 
 @theme inline {
@@ -10,17 +43,98 @@
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+  /* Utility `font-display` → Pally (non è la proprietà CSS font-display). */
+  --font-display: var(--font-pally);
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --background: #7BD7A2;
+    --foreground: black;
   }
+}
+
+html {
+  overflow-x: clip;
+  max-width: 100%;
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
   font-family: var(--font-sans), Arial, Helvetica, sans-serif;
+  overflow-x: hidden;
+  overflow-y: auto;
+  max-width: 100%;
 }
+
+body[data-intro-sealed="true"] header {
+  visibility: hidden;
+  pointer-events: none;
+}
+
+main {
+  overflow-x: hidden;
+  max-width: 100%;
+}
+
+/*
+  Bottone sito: stessa linguetta delle frecce in WorkDetail.
+  Il riempimento resta sul background-color (inline o locale).
+*/
+.siteBtn {
+  --site-btn-stripe: 9px;
+  box-sizing: border-box;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0;
+  border: 2px solid #000000;
+  border-radius: 0;
+  box-shadow: 5px 5px 0 rgba(23, 23, 23, 0.3);
+  font-family: var(--font-pally);
+  font-weight: 700;
+  line-height: 1.15;
+  color: #171717;
+  text-align: center;
+  text-decoration: none;
+  cursor: pointer;
+  appearance: none;
+  background-color: #e9c46a;
+  background-image: linear-gradient(rgba(41, 41, 41, 0.32), rgba(41, 41, 41, 0.32));
+  background-size: 100% var(--site-btn-stripe);
+  background-repeat: no-repeat;
+  background-position: top;
+  transition:
+    transform 0.12s ease,
+    box-shadow 0.12s ease;
+}
+
+.siteBtn:hover,
+.siteBtn:focus-visible {
+  transform: rotate(5deg) translate(3px, 3px);
+  box-shadow: 1px 1px 0 #000000;
+}
+
+.siteBtn:focus-visible {
+  outline: 2px solid #171717;
+  outline-offset: 3px;
+}
+
+.siteBtnPrev:hover,
+.siteBtnPrev:focus-visible {
+  transform: rotate(-6deg) translate(3px, 3px);
+  box-shadow: 1px 1px 0 #000000;
+}
+
+@media (max-width: 768px) {
+  :root {
+    --pink-string-thickness: 18px;
+    --thread-thickness: 18px;
+    --thread-highlight-width: 3px;
+    --thread-shade-width: 2.5px;
+    --thread-outline-width: 2px;
+  }
+}
+
+

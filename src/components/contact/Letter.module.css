@@ -1,0 +1,448 @@
+/* =========================================
+   STRING-TIE ENVELOPE
+   =========================================
+
+   Alignment knobs (override from <Letter /> props or inline style):
+     --letter-button-offset     distance of each washer from the envelope center
+     --letter-button-top-x/y    center of the upper cardboard washer (on the flap)
+     --letter-button-bottom-x/y center of the lower cardboard washer (on the body)
+     --letter-button-size       washer diameter
+
+   Top washer Y is relative to the flap box (height = --pocket-v).
+   Default `calc(100% - offset)` = envelope center - offset when --pocket-v is 50%.
+*/
+
+.root {
+  --letter-button-offset: 85px;
+  --letter-button-top-x: 50%;
+  --letter-button-top-y: calc(100% - var(--letter-button-offset));
+  --letter-button-bottom-x: 50%;
+  --letter-button-bottom-y: calc(50% + var(--letter-button-offset));
+  --letter-button-size: 3rem;
+
+  --letter-kraft: #F0CB84;
+  --letter-kraft-mid: #dcb57f;
+  --letter-kraft-deep: #c9a06a;
+  --letter-paper: #faeed7;
+  --letter-ink: #171717;
+  --letter-rule: color-mix(in srgb, var(--blue) 28%, transparent);
+
+  /* Pocket opening. The flap box is exactly this tall. */
+  --pocket-shoulder: 18%;
+  --pocket-v: 50%;
+  --flap-shoulder: 36%;
+  --flap-depth: 6px;
+
+  position: absolute;
+  z-index: auto;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  width: min(46rem, 68vw);
+  height: 108svh;
+  margin: auto;
+  pointer-events: auto;
+  cursor: pointer;
+  outline: none;
+}
+
+.root:focus-visible {
+  outline: 2px solid var(--thread-color);
+  outline-offset: 6px;
+}
+
+/*
+  Same 3D stage as the passport: perspective + preserve-3d.
+  Layering uses translateZ so the flap can swing in real depth.
+*/
+.shell {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  overflow: visible;
+  perspective: 2000px;
+  perspective-origin: 50% 0%;
+  transform-style: preserve-3d;
+  -webkit-transform-style: preserve-3d;
+}
+
+.back {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background-color: var(--letter-kraft-deep);
+  border: 2px solid black;
+  border-radius: 2rem;
+
+  filter: drop-shadow(15px 15px 0px rgba(0, 0, 0, 0.3));
+
+  transform: translateZ(0);
+}
+
+.paper {
+  position: absolute;
+  z-index: 2;
+  /* Fully below the V so the sealed flap + front hide it completely. */
+  top: var(--pocket-v);
+  left: 7%;
+  right: 7%;
+  height: calc(96% - var(--pocket-v));
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.85rem;
+  padding: 2.1rem 2rem 2.4rem;
+  box-sizing: border-box;
+  background-color: var(--letter-paper);
+  background-image: repeating-linear-gradient(
+    transparent 0 30px,
+    var(--letter-rule) 30px 32px
+  );
+  background-position: 0 3.4rem;
+  border: 2px solid black;
+  box-shadow: 4px 4px 0px black;
+  color: var(--letter-ink);
+  font-family: var(--font-pally);
+  will-change: transform;
+  border-radius: 2rem;
+
+}
+
+.letterhead {
+  margin: 0 0 0.4rem;
+  font-size: clamp(1.6rem, 3vw, 2.4rem);
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  text-transform: uppercase;
+  line-height: 1;
+}
+
+.rule {
+  width: 4.5rem;
+  height: 3px;
+  background: var(--letter-ink);
+  flex-shrink: 0;
+  
+}
+
+.paper p {
+  margin: 0;
+  max-width: 29ch;
+  font-size: clamp(1rem, 1.8vw, 1.25rem);
+  font-weight: 400;
+  line-height: 1.45;
+  text-transform: uppercase;
+  text-align: center;
+}
+
+.paper h3{
+  font-family: var(--font-pally);
+  font-size: 1.3rem;
+  font-weight: 700;
+  line-height: 1;
+  text-transform: uppercase;
+  text-align: center;
+  
+}
+
+.button{
+  padding: 0.5rem 1rem;
+  font-size: 1rem;
+  font-weight: 700;
+  line-height: 2;
+  text-transform: uppercase;
+  text-align: center;
+  
+}
+
+.signature {
+  margin-top: auto;
+  align-self: flex-end;
+  font-size: clamp(1.4rem, 2.4vw, 1.9rem);
+  font-weight: 700;
+  line-height: 1;
+}
+
+.stamp {
+  position: absolute;
+  top: 1.1rem;
+  right: 1.1rem;
+  width: 4.2rem;
+  height: 4.2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  rotate: 12deg;
+  background: var(--pink);
+  border: 2px solid black;
+  box-shadow: 3px 3px 0px black;
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  text-align: center;
+  line-height: 1.15;
+  
+  
+}
+
+/* Pocket: opaque below the V. The flap covers the opening when sealed. */
+.front {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  pointer-events: none;
+  background-color: var(--letter-kraft);
+  background-image:
+    repeating-linear-gradient(
+      135deg,
+      rgba(255, 255, 255, 0.1) 0 10px,
+      transparent 10px 20px
+    );
+  border: 2px solid black;
+  clip-path: polygon(
+    0% var(--pocket-shoulder),
+    50% var(--pocket-v),
+    100% var(--pocket-shoulder),
+    100% 100%,
+    0% 100%
+  );
+  transform: translateZ(8px);
+  border-radius: 2rem;
+  overflow: hidden;
+
+}
+
+.frontSvg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  overflow: visible;
+}
+
+.fold {
+  fill: none;
+  stroke: black;
+  stroke-width: 2;
+  vector-effect: non-scaling-stroke;
+  opacity: 0.35;
+  
+
+}
+
+.pocketEdge {
+  fill: none;
+  stroke: black;
+  stroke-width: 2;
+  vector-effect: non-scaling-stroke;
+  
+}
+
+/*
+  Only as tall as the lid — same idea as the passport's top page, which is
+  a half-panel, not the whole book. Hinge at the top edge (originY: 0).
+*/
+.flap {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: var(--pocket-v);
+  z-index: 4;
+  transform-origin: top center;
+  transform-style: preserve-3d;
+  -webkit-transform-style: preserve-3d;
+  pointer-events: none;
+  overflow: visible;
+  will-change: transform;
+
+}
+
+.flapFace {
+  position: absolute;
+  inset: 0;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  background-color: var(--letter-kraft);
+  border-radius: 2rem;
+  overflow: hidden;
+  border: 2px solid black;
+}
+
+.flapFront {
+  background-color: var(--letter-kraft);
+  background-image:
+    repeating-linear-gradient(
+      135deg,
+      rgba(255, 255, 255, 0.1) 0 10px,
+      transparent 10px 20px
+    );
+
+    clip-path: polygon(
+    0% 0%,
+    100% 0%,
+    100% var(--flap-shoulder),
+    50% 100%,
+    0% var(--flap-shoulder)
+  );
+  transform: translateZ(var(--flap-depth));
+
+}
+
+.flapInside {
+  background-color: var(--letter-kraft-mid);
+  transform: rotateX(180deg) translateZ(var(--flap-depth));
+  clip-path: polygon(
+    0% calc(100% - var(--flap-shoulder)),
+    50% 0%,
+    100% calc(100% - var(--flap-shoulder)),
+    100% 100%,
+    0% 100%
+  );
+}
+
+.edge {
+  position: absolute;
+  background-color: var(--letter-kraft);
+  border: 2px solid black;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  
+}
+
+.edgeHinge {
+  top: 0;
+  left: 0;
+  right: 0;
+  height: calc(var(--flap-depth) * 2);
+  transform: translateY(-50%) rotateX(90deg);
+  
+}
+
+.edgeLeft {
+  top: 0;
+  left: 0;
+  width: calc(var(--flap-depth) * 2);
+  height: var(--flap-shoulder);
+  transform: translateX(-50%) rotateY(-90deg);
+}
+
+.edgeRight {
+  top: 0;
+  right: 0;
+  width: calc(var(--flap-depth) * 2);
+  height: var(--flap-shoulder);
+  transform: translateX(50%) rotateY(90deg);
+}
+
+
+
+.flapSvg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  pointer-events: none;
+  
+}
+
+.flapOutline {
+  fill: none;
+  stroke: black;
+  stroke-width: 2;
+  vector-effect: non-scaling-stroke;
+}
+
+/*
+  Bottom washer only: lives above the thread (z=3) so the string can wrap it.
+  The top washer is a child of .flap and travels with the lid.
+*/
+.hardware {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  pointer-events: none;
+  
+  border-radius: 2rem;
+  overflow: hidden;
+}
+
+.washer {
+  position: absolute;
+  width: var(--letter-button-size);
+  height: var(--letter-button-size);
+  border-radius: 50%;
+  outline: 1.5rem solid #5A3928;
+  border: 2px solid black;
+  background:
+    radial-gradient(
+      circle at 50% 50%,
+      var(--pin-core) 0 50%,
+      #626262 18% 100%,
+      black 27% 100%,
+      #c49862 59% 100%
+    );
+    box-shadow:
+    0 0 0 1.6rem black,
+    inset 0 1px 1px rgba(255, 255, 255, 0.7);
+  
+  
+    
+    filter: drop-shadow(5px 5px 0px rgba(0, 0, 0, 0.3));
+
+  transform: translate(-50%, -50%);
+  
+}
+
+
+
+.washerTop {
+  left: var(--letter-button-top-x);
+  top: var(--letter-button-top-y);
+  z-index: 2;
+  transform: translate(-50%, -50%) translateZ(calc(var(--flap-depth) + 2px));
+  
+}
+
+.washerBottom {
+  left: var(--letter-button-bottom-x);
+  top: var(--letter-button-bottom-y);
+}
+
+@media (max-width: 768px) {
+  .root {
+    position: relative;
+    inset: auto;
+    width: min(92vw, 22rem, 58svh);
+    max-width: 100%;
+    height: auto;
+    aspect-ratio: 3 / 4.15;
+    margin: 0 auto;
+    --letter-button-offset: 52px;
+    --letter-button-size: 2.25rem;
+  }
+
+  .paper {
+    padding: 1.25rem 1.1rem 1.4rem;
+    gap: 0.65rem;
+  }
+
+  .stamp {
+    width: 3.2rem;
+    height: 3.2rem;
+    top: 0.7rem;
+    right: 0.7rem;
+    font-size: 0.5rem;
+  }
+
+  .washer {
+    outline-width: 0.85rem;
+    box-shadow:
+      0 0 0 0.95rem black,
+      inset 0 1px 1px rgba(255, 255, 255, 0.7);
+  }
+}

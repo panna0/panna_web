@@ -1,0 +1,127 @@
+.stage {
+  /*
+    Geometria di filo e foro: unica fonte di verità, ereditata anche da
+    ServiceCard.module.css.
+  */
+  --hole-y: 4.8rem;
+  --hole-y-content: 3.5rem;
+  --hole-r: 2rem;
+  --card-gap: 64px;
+  /*
+    Spazio sopra le card: dondolando sul perno gli angoli alti salgono
+    oltre il bordo superiore e senza questo margine verrebbero tagliati.
+  */
+  --swing-headroom: 5rem;
+  position: relative;
+  width: 100%;
+  min-width: 0;
+  overflow: visible;
+}
+
+.rail {
+  position: absolute;
+  border-top: var(--thread-outline-width) solid var(--thread-outline);
+  border-bottom: var(--thread-outline-width) solid var(--thread-outline);
+  z-index: 0;
+  left: 0;
+  right: 0;
+  top: calc(
+    var(--swing-headroom) + var(--hole-y) - var(--thread-thickness) / 2
+  );
+  height: var(--thread-thickness);
+  background:
+    linear-gradient(180deg, var(--thread-highlight), var(--thread-highlight))
+      top left / 100% var(--thread-highlight-width) no-repeat,
+    linear-gradient(180deg, var(--thread-shade), var(--thread-shade)) bottom
+      left / 100% var(--thread-shade-width) no-repeat,
+    var(--thread-color);
+  pointer-events: none;
+}
+
+.leadIn {
+  position: absolute;
+  top: 0;
+  z-index: 0;
+  overflow: visible;
+  pointer-events: none;
+}
+
+.scroller {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  min-width: 0;
+  padding-top: var(--swing-headroom);
+  padding-bottom: 5.5rem;
+  overflow-x: auto;
+  overflow-y: hidden;
+  overscroll-behavior-x: contain;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  cursor: grab;
+  user-select: none;
+  -webkit-user-select: none;
+  container-type: inline-size;
+}
+
+.scroller::-webkit-scrollbar {
+  display: none;
+}
+
+.scroller:focus-visible {
+  outline: 2px solid var(--thread-color);
+  outline-offset: 4px;
+}
+
+.entering {
+  pointer-events: none;
+  cursor: default;
+}
+
+.dragging {
+  cursor: grabbing;
+}
+
+.track {
+  display: flex;
+  gap: var(--card-gap);
+  width: max-content;
+  will-change: transform;
+  /* Prima dell'idratazione: card già a destra sul filo, niente flash a riposo. */
+  transform: translateX(100cqi);
+}
+
+/*
+  Larghezza sul contenitore visibile (lo scroller), non sul binario:
+  3 card nello schermo, le altre oltre il bordo.
+*/
+.item {
+  box-sizing: border-box;
+  flex: 0 0 calc((100cqi - 2 * var(--card-gap)) / 3);
+}
+
+@media (max-width: 768px) {
+  .stage {
+    --hole-y: 3.35rem;
+    --hole-y-content: 2.35rem;
+    --hole-r: 1.15rem;
+    --card-gap: 1.25rem;
+    --swing-headroom: 3.25rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    max-width: 100%;
+  }
+
+  .scroller {
+    width: 100%;
+    max-width: 100%;
+    padding-inline: max(1.25rem, calc((100% - min(78cqi, 17.5rem)) / 2));
+    padding-bottom: 4rem;
+  }
+
+  .item {
+    flex: 0 0 min(78cqi, 17.5rem);
+    max-width: 100%;
+  }
+}

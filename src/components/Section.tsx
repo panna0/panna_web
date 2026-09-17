@@ -11,7 +11,7 @@ export function Section({ id, children, className = "" }: SectionProps) {
   return (
     <section
       id={id}
-      className={`flex h-svh w-full flex-col items-center justify-center px-6 ${className}`.trim()}
+      className={`mx-0 h-auto min-h-[100svh] w-full max-w-full px-0 md:h-[130svh] ${className}`.trim()}
     >
       {children}
     </section>

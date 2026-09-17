@@ -1,0 +1,62 @@
+/* Il contenitore posizionato in modo assoluto dentro la navbar (che deve essere relative) */
+.sheetWrapper {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+     /* L'ombra stacca il foglio attivo dagli altri */
+  }
+  
+  /* Il corpo principale, taglia il bordo superiore se la nav è attaccata al tetto del browser */
+  .sheetBody {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border-bottom: 2px solid #171717;
+    background-color: #faeed7;
+    padding-left: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    justify-content: center;
+    align-items: start;
+
+    /* Se la navbar non è attaccata in alto, aggiungi bordi anche sopra/lati */
+  }
+  
+  /* La linguetta cliccabile */
+  .tab {
+    position: absolute;
+    top: 100%; /* Si appende esattamente sotto il bordo inferiore del foglio */
+    height: 48px;
+    pointer-events: auto; /* Riattiva i click su questa zona */
+    
+    /* Taglio a cartellina (Bordi dritti sopra, arrotondati sotto) */
+    border: 2px solid #171717;
+    border-top: none;
+    border-radius: 0 0 12px 12px;
+    padding-top: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    
+    /* Transizione CSS extra per hover (indipendente da Framer Motion) */
+    transition: background-color 0.2s ease, filter 0.2s ease;
+  }
+  
+  .tab:hover {
+    filter: brightness(0.95);
+  }
+  
+  .label {
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: #171717;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-family: var(--font-pally);
+  }

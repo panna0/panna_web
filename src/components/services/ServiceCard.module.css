@@ -1,0 +1,535 @@
+.card {
+  position: relative;
+  height: min(38.8rem, 90svh);
+  width: 100%;
+  user-select: none;
+  left: 6rem;
+  cursor: pointer;
+  
+  --hole-r: 18px;
+  max-width: 100%;
+}
+
+@media (max-width: 768px) {
+  .card {
+    left: 0;
+    width: 100%;
+    height: min(50svh, 38.8rem);
+    aspect-ratio: 2 / 3.35;
+    max-height: 68svh;
+    --hole-r: 14px;
+  }
+}
+
+.card:focus-visible {
+  outline: 2px solid var(--thread-color);
+  outline-offset: 4px;
+  border-radius: 20px;
+
+}
+
+/*
+  Pendolo: riempie la card. Il perno è il centro del buco, coincidente col
+  filo e col tondino. perspective sta qui perché i figli (il flip) vivono
+  in questo spazio; rotateZ è l'unico transform di questo nodo.
+*/
+.swinger {
+  position: relative;
+  z-index: 1;
+  height: 100%;
+  transform-origin: 50% var(--hole-y);
+  perspective: 1400px;
+  perspective-origin: 50% var(--hole-y);
+  transform-style: preserve-3d;
+  -webkit-transform-style: preserve-3d;
+  will-change: transform;
+  
+}
+
+/*
+  Tondino centrato sul buco. Il foro interno coincide col raggio del buco
+  della card, così il filo può attraversarlo. Sta SOPRA le facce ma SOTTO
+  il segmento di filo ::after della card: a destra il filo lo copre, a
+  sinistra resta visibile — è l'intreccio.
+*/
+.ring {
+  --ring-inner: calc(var(--hole-r) * 2);
+  --ring-outer: calc(var(--ring-inner) + 20px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: absolute;
+  z-index: 2;
+  top: var(--hole-y);
+  left: 50%;
+  width: var(--ring-outer);
+  height: var(--ring-outer);
+  border-radius: 50%;
+  pointer-events: none;
+  border: 2px solid black;
+  transform: translate(-50%, -50%) translateZ(12px);
+  box-shadow:
+    0 2px 4px rgba(23, 23, 23, 0.28),
+    inset 0 1px 1px rgba(255, 255, 255, 0.7);
+  -webkit-mask-image: radial-gradient(
+    circle,
+    transparent calc(var(--ring-inner) / 2),
+    #000 calc(var(--ring-inner) / 2 + 1.2px)
+  );
+  mask-image: radial-gradient(
+    circle,
+    transparent calc(var(--ring-inner) / 2),
+    #000 calc(var(--ring-inner) / 2 + 1.2px)
+  );
+  mask-mode: alpha;
+  background-color: red;
+
+}
+
+.ringInner {
+  --ring-border: calc(var(--ring-inner) + 5px);
+  background-color: #000000;
+  z-index: 2;
+  top: var(--hole-y);
+  left: 50%;
+  width: var(--ring-border);
+  height: var(--ring-border);
+  border-radius: 50%;
+  pointer-events: none;
+  border: 2px solid black;
+  /* -webkit-mask-image: radial-gradient(
+    circle,
+    transparent calc(var(--ring-inner) / 2),
+    #000 calc(var(--ring-inner) / 2 + 1.2px)
+  );
+  mask-image: radial-gradient(
+    circle,
+    transparent calc(var(--ring-inner) / 2),
+    #000 calc(var(--ring-inner) / 2 + 1.2px)
+  );
+  mask-mode: alpha; */
+}
+
+
+.flipper {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  border-radius: 20px;
+  pointer-events: none;
+  box-shadow: 10px 22px 0px rgba(23, 23, 23, 0.16), 0 0px 0px rgba(23, 23, 23, 0.08);
+
+  transform-style: preserve-3d;
+  -webkit-transform-style: preserve-3d;
+  
+}
+
+.front{
+  box-shadow: 10px 22px 0px rgba(23, 23, 23, 0.16), 0 0px 0px rgba(23, 23, 23, 0.08);
+  
+  position: absolute;
+  inset: 0;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  justify-content: start;
+  padding: 1.3rem;
+  gap: 0.85rem;
+  border-radius: 20px;
+  overflow: hidden;
+  border: 2px solid black;
+  color: #171717;
+
+  background: radial-gradient(
+                circle at 50% var(--hole-y, 28px),
+                transparent var(--hole-r, 11px),
+                #faeed7 calc(var(--hole-r, 11px) + 2px)
+              );
+
+}
+
+.back {
+  position: absolute;
+  inset: 0;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+  padding: 1.3rem;
+  border-radius: 20px;
+  overflow: hidden;
+  color: #171717;
+  border: 2px solid black;
+  /*
+    Buco originale: al centro del tondino la card è trasparente, così il
+    rail dietro si vede nella metà sinistra del cerchio.
+  */
+  background: radial-gradient(
+    circle at 50% var(--hole-y, 28px),
+    transparent var(--hole-r, 11px),
+    #faeed7 calc(var(--hole-r, 11px) + 2px)
+  );
+}
+
+.cardContent {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  height: 100%;
+  width: 100%;
+  padding: 6.5rem 1.7rem 1.7rem;
+  border-radius: 15px;
+  border: 3px solid #d5c8ad;
+  gap: 1.15rem;
+  -webkit-mask-image: radial-gradient(
+    circle var(--hole-r, 11px) at 50% var(--hole-y-content, 28px),
+    transparent calc(var(--hole-r, 11px) + 2.5px),
+    #fff var(--hole-r, 11px)
+  );
+  mask-image: radial-gradient(
+    circle var(--hole-r, 11px) at 50% var(--hole-y-content, 28px),
+    transparent calc(var(--hole-r, 11px) + 2.5px),
+    #fff var(--hole-r, 11px)
+  );
+  mask-mode: alpha;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+}
+
+.mixLabel {
+  margin: 0;
+  font-family: var(--font-pally);
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: #626262;
+}
+
+.mix {
+  display: flex;
+  margin: 0;
+  padding: 0;
+  flex-direction: column;
+  gap: 0.95rem;
+  list-style: none;
+}
+
+.mixRow {
+  display: flex;
+  align-items: baseline;
+  gap: 0.55rem;
+  font-family: var(--font-pally);
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  color: #171717;
+}
+
+.mixName {
+  flex: 0 1 auto;
+  min-width: 0;
+  font-size: clamp(1rem, 2.1vw, 1.2rem);
+  line-height: 1.15;
+}
+
+.mixRule {
+  flex: 1 1 auto;
+  min-width: 1.25rem;
+  height: 0;
+  border-bottom: 2px dotted #171717;
+  opacity: 0.35;
+  transform: translateY(-0.28em);
+}
+
+.mixPts {
+  flex: 0 0 auto;
+  font-size: clamp(1rem, 2.1vw, 1.2rem);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.1em;
+  line-height: 1.15;
+  white-space: nowrap;
+}
+
+.textContent{
+  h1{
+    font-weight: 700;
+    margin-bottom: 0;
+    text-transform: uppercase;
+    font-family: var(--font-pally);
+    font-weight: bold;
+    font-size: 5rem;
+  }
+  h3{
+    font-weight: 400;
+    margin-top: -2rem;
+    text-transform: uppercase;
+    font-family: var(--font-pally);
+    font-size: 2.3rem;
+  }
+  
+  p{
+    font-weight: 400;
+    margin-top: -0.5rem;
+    margin-left: 0.3rem;
+    font-family: var(--font-pally);
+    text-transform: uppercase;
+    font-size: 1.3rem;
+    color: #626262;
+  }
+}
+
+.frontInner {
+  align-items: center;
+  justify-content: center;
+  height: 70%;
+  display: flex;
+  flex-direction: column;
+  justify-content: end;
+  align-items: center;
+  background-color: #000000;
+  border: 2px solid black;
+}
+
+.icon {
+  display: flex;
+  width: 5.5rem;
+  height: 5.5rem;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  box-shadow: 0 4px 0 0 rgba(0, 0, 0, 0.12);
+}
+
+.icon svg {
+  width: 2.6rem;
+  height: 2.6rem;
+}
+
+.frontId {
+  margin: 0;
+  font-family: var(--font-pally);
+  font-size: 0.95rem;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  opacity: 0.55;
+}
+
+.frontTitle {
+  margin: 0;
+  max-width: 12ch;
+  text-align: center;
+  font-family: var(--font-pally);
+  font-size: clamp(1.8rem, 3.2vw, 2.6rem);
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  line-height: 1.1;
+  text-transform: uppercase;
+}
+
+.title {
+  mix-blend-mode: multiply;
+  width: fit-content;
+  height: 30%;
+  border-radius: 100;
+  display: flex;
+  padding: 3rem;
+  justify-content: left;
+  align-items: center;
+
+  h3 {
+    mix-blend-mode: multiply;
+    font-size: 1.35rem;
+    font-weight: 600;
+    letter-spacing: -0.03em;
+    line-height: 1.15;
+    margin: 0;
+    text-transform: uppercase;
+    font-family: var(--font-pally);
+    font-weight: bold;
+    font-size: 5rem;
+  }
+}
+
+.description {
+  padding: 1rem;
+  height: 55%;
+  border-radius: 1rem;
+  border: 3px solid;
+  box-shadow: 0px 5px 0 0 rgba(0, 0, 0, 0.2);
+}
+
+.descriptionContent {
+  height: 100%;
+  width: 100%;
+  border-radius: 1rem;
+  border: 3px dashed;
+  padding: 1rem;
+
+  h4 {
+    letter-spacing: -0.03em;
+    line-height: 1.15;
+    margin: 0;
+    text-transform: uppercase;
+    font-family: var(--font-pally);
+    font-weight: 700;
+    font-size: 2.3rem;
+    color: #171717;
+    opacity: 0.8;
+  }
+}
+
+.label {
+  width: fit-content;
+  height: fit-content;
+  position: absolute;
+  rotate: 3deg;
+  z-index: 2;
+  top: 50%;
+  margin-left: 2rem;
+  padding: 0.5rem 1rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #171717;
+
+  p {
+    color: #fff;
+    font-size: 1.35rem;
+    font-weight: 600;
+    letter-spacing: -0.03em;
+    line-height: 1.15;
+    margin: 0;
+    text-transform: uppercase;
+    font-family: var(--font-pally);
+    font-weight: regular;
+    font-size: 1.5rem;
+  }
+
+  &::before {
+    content: "";
+    position: absolute;
+    left: -6px;
+    top: 0;
+    width: 6px;
+    height: 100%;
+    rotate: 180deg;
+    background: conic-gradient(
+      from 225deg at right,
+      #171717 0deg,
+      #171717 90deg,
+      transparent 90deg
+    );
+    background-size: 101% 11px;
+  }
+
+  &::after {
+    content: "";
+    position: absolute;
+    right: -6px;
+    top: 0;
+    width: 6px;
+    rotate: 180deg;
+    height: 100%;
+    background: conic-gradient(
+      from 45deg at left,
+      #171717 0deg,
+      #171717 90deg,
+      transparent 90deg
+    );
+    background-size: 101% 11px;
+  }
+}
+
+.threadOver {
+  border-top: var(--thread-outline-width) solid var(--thread-outline);
+  border-bottom: var(--thread-outline-width) solid var(--thread-outline);
+  position: absolute;
+  z-index: 3;
+  top: calc(var(--hole-y) - var(--thread-thickness) / 2);
+  width: calc(50% + var(--card-gap) / 2 + 14px);
+  height: var(--thread-thickness);
+  pointer-events: none;
+  background:
+    linear-gradient(180deg, var(--thread-highlight), var(--thread-highlight))
+      top left / 100% var(--thread-highlight-width) no-repeat,
+    linear-gradient(180deg, var(--thread-shade), var(--thread-shade)) bottom
+      left / 100% var(--thread-shade-width) no-repeat,
+    var(--thread-color);
+}
+
+/*
+  Fronte: il filo esce dal tondino verso destra, sopra il cerchio,
+  e prosegue nel gap verso la card successiva.
+*/
+.threadOverAfter {
+  left: 49%;
+}
+
+/*
+  Retro: specchio — il filo esce dal tondino verso sinistra.
+*/
+.threadOverBefore {
+  right: 49%;
+  visibility: hidden;
+}
+
+@media (max-width: 768px) {
+  .front,
+  .back {
+    padding: 0.85rem;
+    gap: 0.55rem;
+  }
+
+  .cardContent {
+    padding: 4.25rem 0.9rem 0.9rem;
+    gap: 0.65rem;
+  }
+
+  .mix {
+    gap: 0.7rem;
+  }
+
+  .mixName,
+  .mixPts {
+    font-size: 0.92rem;
+  }
+
+  .textContent h1 {
+    font-size: 2.6rem;
+  }
+
+  .textContent h3 {
+    font-size: 1.35rem;
+    margin-top: -0.85rem;
+  }
+
+  .textContent p {
+    font-size: 0.85rem;
+  }
+
+  .title {
+    padding: 1.25rem;
+    h3 {
+      font-size: 2.4rem;
+    }
+  }
+
+  .descriptionContent h4 {
+    font-size: 1.35rem;
+  }
+
+  .frontInner {
+    height: 62%;
+  }
+
+  .label {
+    margin-left: 0.75rem;
+    padding: 0.35rem 0.7rem;
+    p {
+      font-size: 1rem;
+    }
+  }
+}

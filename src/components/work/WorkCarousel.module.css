@@ -1,0 +1,440 @@
+.wrapper {
+  display: flex;
+  width: 85%;
+  max-width: 100%;
+  height: 100%;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2rem;
+  border-radius: 1rem;
+  position: relative;
+}
+
+.frame {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  z-index: 1;
+  /* L'ombra va sul contenitore (non mascherato) */
+  filter: drop-shadow(8px 8px 0px rgba(0, 0, 0, 0.3));
+}
+
+.frame::before {
+  content: "";
+  position: absolute;
+  inset: 0; /* Fa espandere lo pseudo-elemento a tutto il .frame */
+  background-color: #F0CB84;
+  border-radius: 1rem;
+  border: 2px solid #000000;
+  
+  /* Tutte le maschere vanno applicate qui */
+  -webkit-mask-image: linear-gradient(#fff, #fff), linear-gradient(#fff, #fff);
+  -webkit-mask-size: 100% 100%, calc(100% - 3rem) calc(100% - 3rem);
+  -webkit-mask-position: center;
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-composite: xor;
+
+  mask-image: linear-gradient(#fff, #fff), linear-gradient(#fff, #fff);
+  mask-size: 100% 100%, calc(100% - 3rem) calc(100% - 3rem); 
+  mask-position: center;
+  mask-repeat: no-repeat;
+  mask-composite: exclude;
+}
+
+.bg {
+  width: calc(100% - 3rem);
+  height: calc(100% - 3rem);
+  position: absolute;
+  background-color: #CE976B;
+  background-image: 
+    radial-gradient(#B88860 2px, transparent 2.5px),
+    radial-gradient(#E1A97B 2px, transparent 2.5px);
+  background-size: 30px 30px;
+  background-position: 0 0, 10px 10px; /* Distanza tra un puntino e l'altro */
+  border: 2px solid #000000;
+}
+
+.postitContainer{
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  height: 100%;
+  padding: 0 3rem;
+  position: absolute;
+}
+
+.postit{
+  width: fit-content;
+  height: fit-content;
+  padding: 0.5rem 2rem;
+  background-color: #E9C46A;
+  color: black;
+  font-family: var(--font-pally);
+  font-size: 4rem;
+  font-weight: 700;
+  letter-spacing: -0.04em;
+  text-transform: uppercase;
+  border: 2px solid #000000;
+  z-index: 1;
+  cursor: pointer;
+ 
+}
+
+.postit:first-child{
+  transform: rotate(185deg);
+  background: linear-gradient(180deg, #D0AF5C, #D0AF5C)
+  bottom left / 100% 20px no-repeat,
+  #E9C46A;
+  box-shadow: -5px -5px 0px 0px rgba(0, 0, 0, 0.3);
+
+}
+
+.postit:last-child{
+  transform: rotate(-5deg);
+  background: linear-gradient(180deg, #D0AF5C, #D0AF5C)
+  top left / 100% 20px no-repeat,
+  #E9C46A;
+  box-shadow: 5px 5px 0px 0px rgba(0, 0, 0, 0.3);
+
+}
+
+
+
+/*
+  Lo stage è più largo della cornice: il bordo libero è lo spazio in cui il
+  filo si gonfia, e siccome l'immagine copre tutto lo stage, tirando si scopre
+  più immagine invece di un buco.
+*/
+.stage {
+  position: relative;
+  z-index: 1;
+  width: min(1298px, 96vw);
+  height: min(72svh, 756px);
+
+}
+
+.cover {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+}
+
+/*
+  Il contenuto vive nel riquadro della cornice (clip-path), non nello stage
+  intero: così object-fit: cover riempie la finestra visibile. Un po' di
+  overflow lascia margine al trascinamento del filo.
+*/
+.coverInner {
+  position: absolute;
+  left: var(--clip-left, 17%);
+  top: var(--clip-top, 12%);
+  width: var(--clip-width, 66%);
+  height: var(--clip-height, 76%);
+  transform-origin: center center;
+  will-change: transform;
+  overflow: visible;
+}
+
+.coverSlide {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: row;
+  overflow: visible;
+}
+
+.coverLayer {
+  position: relative;
+  flex: 1 1 60%;
+  min-width: 0;
+  min-height: 0;
+  height: 100%;
+  overflow: visible;
+}
+
+.coverInfo {
+  position: relative;
+  flex: 0 0 40%;
+  min-width: 0;
+  min-height: 0;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  align-items: start;
+  background-color: #faeed7;
+  border-right: 2px solid #000000;
+  padding: 0 4rem;
+  
+}
+
+.coverInfoButton {
+  position: relative;
+  z-index: 2;
+  pointer-events: auto;
+  font-family: var(--font-pally);
+  width: 100%;
+  font-size: 1.5rem;
+  font-weight: 700;
+  letter-spacing: -0.04em;
+  text-transform: uppercase;
+  color: #000000;
+  line-height: 1.2;
+  background-color: #E9C46A;
+  border: 2px solid #000000;
+  padding: 1rem 2rem;
+  cursor: pointer;
+}
+
+
+
+
+.coverInfoInner {
+  display: flex;
+  flex-direction: column;
+  align-items: start;
+  justify-content: center;
+  font-family: var(--font-pally);
+  
+
+  h3{
+    font-size: 2.5rem;
+    font-weight: 700;
+    letter-spacing: -0.04em;
+    text-transform: uppercase;
+    color: #000000;
+    line-height: 1.2;
+  }
+  h4{
+    font-size: 2rem;
+    font-weight: 700;
+    letter-spacing: -0.04em;
+    color: #000000;
+  }
+  h5{
+    font-size: 1rem;
+    font-weight: 700;
+    letter-spacing: -0.04em;
+    text-transform: uppercase;
+    color: #000000;
+    line-height: 1.2;
+  }
+}
+
+.coverImage {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+}
+
+.coverTag {
+  font-family: var(--font-pally);
+  font-size: clamp(4rem, 11vw, 10rem);
+  font-weight: 700;
+  letter-spacing: -0.04em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.72);
+}
+
+.thread {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  /* Le code del filo escono dallo stage: qui non si taglia niente. */
+  overflow: visible;
+  pointer-events: none;
+}
+
+.handle {
+  position: absolute;
+  z-index: 2;
+  appearance: none;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 999px;
+  background: none;
+  cursor: grab;
+  /* Il trascinamento è orizzontale: la pagina resta libera di scorrere. */
+  touch-action: pan-y;
+}
+
+.handle:active {
+  cursor: grabbing;
+}
+
+.handle:focus-visible {
+  outline: 2px solid var(--thread-shade);
+  outline-offset: 6px;
+}
+
+.meta {
+  position: relative;
+  z-index: 0;
+  display: flex;
+  width: min(1180px, 92vw);
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 2rem;
+  font-family: var(--font-pally);
+  color: #000000;
+}
+
+.counter {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+
+.counter span {
+  color: #626262;
+}
+
+.metaText {
+  flex: 1;
+  text-align: center;
+}
+
+.projectTitle {
+  margin: 0;
+  font-size: clamp(1.8rem, 3.4vw, 3rem);
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  text-transform: uppercase;
+}
+
+.projectLine {
+  margin: 0.2rem 0 0;
+  font-size: 1.05rem;
+  text-transform: uppercase;
+  color: #626262;
+}
+
+.hint {
+  margin: 0;
+  font-size: 1.05rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #626262;
+}
+
+@media (max-width: 768px) {
+  .wrapper {
+    --cork-inset: 1.35rem;
+    width: min(92vw, 24rem, 54svh);
+    max-width: 100%;
+    height: auto;
+    aspect-ratio: 3 / 4;
+    gap: 0;
+    flex-shrink: 0;
+  }
+
+  .bg {
+    width: calc(100% - var(--cork-inset));
+    height: calc(100% - var(--cork-inset));
+  }
+
+  .frame::before {
+    -webkit-mask-size: 100% 100%,
+      calc(100% - var(--cork-inset)) calc(100% - var(--cork-inset));
+    mask-size: 100% 100%,
+      calc(100% - var(--cork-inset)) calc(100% - var(--cork-inset));
+  }
+
+  .stage {
+    position: absolute;
+    inset: calc(var(--cork-inset) * 0.55);
+    width: auto;
+    height: auto;
+  }
+
+  .postitContainer {
+    padding: 0 0.75rem;
+  }
+
+  .meta {
+    width: 100%;
+    max-width: 100%;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    text-align: center;
+  }
+
+  .metaText {
+    text-align: center;
+  }
+
+  .postit {
+    font-size: 3rem;
+    display: none;
+  }
+
+  .coverSlide {
+    flex-direction: column;
+  }
+
+  .coverInfo {
+    flex: 0 0 50%;
+    width: 100%;
+    height: auto;
+    border-right: none;
+    border-top: 2px solid #000000;
+    order: 2;
+    padding: 1rem 3rem;
+  }
+
+  .coverLayer {
+    flex: 1 1 50%;
+    width: 100%;
+    height: auto;
+    order: 1;
+  }
+
+
+.coverInfoInner {
+  h3{
+    font-size: 1.5rem;
+    font-weight: 700;
+    letter-spacing: -0.04em;
+    text-transform: uppercase;
+    color: #000000;
+    line-height: 1.2;
+  }
+  h4{
+    font-size: 1rem;
+    font-weight: 700;
+    letter-spacing: -0.04em;
+    color: #000000;
+  }
+  h5{
+    font-size: 1rem;
+    font-weight: 700;
+    letter-spacing: -0.04em;
+    text-transform: uppercase;
+    color: #000000;
+    line-height: 1.2;
+  }
+}
+
+.coverInfoButton {
+  width: 100%;
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: -0.04em;
+  text-transform: uppercase;
+  color: #000000;
+  line-height: 1.2;
+  background-color: #E9C46A;
+  border: 2px solid #000000;
+  padding: 0.5rem 1rem;
+  border-radius: 0.2rem;
+  cursor: pointer;
+}
+}
