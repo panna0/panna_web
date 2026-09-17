@@ -88,23 +88,11 @@ function measureFrame(stage: HTMLDivElement): Frame {
     outline: readCssPx(css, "--thread-outline-width", 2),
   };
 
-  /*
-    Il margine libero attorno alla cornice è lo spazio in cui il filo può
-    gonfiarsi. L'immagine copre tutto lo stage, margine incluso: tirando, la
-    finestra si allarga e scopre più immagine invece di lasciare un vuoto.
-  */
   const padX = clamp(width * 0.17, 56, 250);
   const padY = clamp(height * 0.12, 44, 120);
   const quad = buildQuad({ width, height }, padX, padY);
   const escape = clamp((quad[1].x - quad[0].x) * 0.4, 150, 380);
 
-  /*
-    Le code sbordano dallo stage. Sopra il filo arriva dal bordo della
-    sezione Work (con un accenno nell'intro); a sinistra supera il bordo
-    della finestra, dove il rail dei servizi lo riprende. La sezione
-    successiva ritaglia il proprio overflow, quindi la curva deve chiudersi
-    prima del confine inferiore di Work.
-  */
   const section = stage.closest("section")?.getBoundingClientRect();
   const tails = buildTails(
     quad,
@@ -128,16 +116,11 @@ function measureFrame(stage: HTMLDivElement): Frame {
   };
 }
 
-/*
-  La cattura del puntatore tiene il gesto sulla zona di presa anche quando il
-  dito ne esce, ma va incapsulata: se il puntatore non è più attivo il browser
-  solleva un'eccezione e il gesto non deve morire per questo.
-*/
 function capturePointer(target: HTMLElement, pointerId: number) {
   try {
     target.setPointerCapture(pointerId);
   } catch {
-    /* Puntatore già chiuso: si continua a seguirlo con gli eventi normali. */
+    /* Puntatore già chiuso */
   }
 }
 
@@ -147,14 +130,12 @@ function releasePointer(target: HTMLElement, pointerId: number) {
       target.releasePointerCapture(pointerId);
     }
   } catch {
-    /* Già rilasciato. */
+    /* Già rilasciato */
   }
 }
 
-/** Zone di presa sopra i due lati verticali del filo. */
 function handleBox(frame: Frame, edge: EdgeIndex): CSSProperties {
   const { quad, thread } = frame;
-  /* Presa comoda al dito, ma senza mai inghiottire la finestra dell'immagine. */
   const width = Math.min(thread.thickness + 44, (quad[1].x - quad[0].x) * 0.3);
   const top = Math.min(quad[0].y, quad[1].y) + thread.thickness;
   const bottom = Math.max(quad[2].y, quad[3].y) - thread.thickness;
@@ -165,7 +146,6 @@ function handleBox(frame: Frame, edge: EdgeIndex): CSSProperties {
   return { left: centerX - width / 2, top, width, height: bottom - top };
 }
 
-/** Rettangolo visibile della cornice (interno alle puntine), in px sullo stage. */
 function quadBounds(quad: Quad) {
   const left = Math.min(quad[0].x, quad[1].x, quad[2].x, quad[3].x);
   const right = Math.max(quad[0].x, quad[1].x, quad[2].x, quad[3].x);
@@ -198,35 +178,38 @@ export function WorkCarousel() {
   const settle = useRef<ReturnType<typeof animate>[]>([]);
   const lastTravel = useRef(0);
 
-  /* L'immagine è tenuta dal filo: quando il filo cede, se la porta dietro. */
-  const coverX = useTransform(pullX, (value) =>
+  const coverX = useTransform(pullX, (value: number) =>
     reduceMotion ? 0 : value * 0.22,
   );
-  /*
-    Scala sincronizzata allo stretch reale: la maschera si allarga di |pull|
-    su un lato, e con origin al centro serve 2*|pull|/larghezza per coprire
-    entrambi i lati senza lasciare il bordo tagliato.
-  */
+
   const clipSizeRef = useRef({ width: 1, height: 1 });
   const reduceMotionRef = useRef(reduceMotion);
-  reduceMotionRef.current = reduceMotion;
-  if (frame) {
-    clipSizeRef.current = quadBounds(frame.quad);
-  }
-  const coverScale = useTransform([pullX, pullY], ([x, y]) => {
-    if (reduceMotionRef.current) return 1;
-    const { width, height } = clipSizeRef.current;
-    const sx = 1 + (2 * Math.abs(x)) / width;
-    const sy = 1 + (2 * Math.abs(y)) / height;
-    return Math.max(sx, sy);
-  });
 
-  /*
-    Il filo esiste solo in px misurati, quindi la prima misura non può
-    dipendere dalla notifica iniziale dell'osservatore: quella a volte non
-    arriva e la cornice resterebbe invisibile. Misuro al frame successivo al
-    mount, poi lascio all'osservatore i cambi di dimensione.
-  */
+  // Aggiorna in modo sicuro i ref senza bloccare il render
+  useEffect(() => {
+    reduceMotionRef.current = reduceMotion;
+  }, [reduceMotion]);
+
+  useEffect(() => {
+    if (frame) {
+      clipSizeRef.current = quadBounds(frame.quad);
+    }
+  }, [frame]);
+
+  // Firma corretta per useTransform: accetta number[] da Framer Motion
+  const coverScale = useTransform(
+    [pullX, pullY],
+    (latest: number[]) => {
+      if (reduceMotionRef.current) return 1;
+      const x = latest[0] || 0;
+      const y = latest[1] || 0;
+      const { width, height } = clipSizeRef.current;
+      const sx = 1 + (2 * Math.abs(x)) / width;
+      const sy = 1 + (2 * Math.abs(y)) / height;
+      return Math.max(sx, sy);
+    }
+  );
+
   useEffect(() => {
     const stage = stageRef.current;
     if (!stage) return;
@@ -268,7 +251,6 @@ export function WorkCarousel() {
     );
   };
 
-  /** Lo scatto: il progetto cambia nell'istante in cui il filo parte indietro. */
   const advance = (direction: 1 | -1) => {
     setIndex(
       (current) => (current + direction + PROJECTS.length) % PROJECTS.length,
@@ -276,7 +258,6 @@ export function WorkCarousel() {
     home(reduceMotion ? QUICK : SNAP_BACK);
   };
 
-  /** Tirata breve comandata da tastiera o click, con lo stesso scatto finale. */
   const flick = (direction: 1 | -1) => {
     if (!frame) return;
     grab.current = {
@@ -330,7 +311,6 @@ export function WorkCarousel() {
     active.outward = outward;
     active.travel = Math.max(active.travel, Math.abs(raw));
 
-    /* Verso il centro il filo è già teso sulle puntine: cede molto meno. */
     const stretch =
       outward >= 0
         ? resist(outward, frame.maxStretchX)
@@ -362,7 +342,6 @@ export function WorkCarousel() {
   };
 
   const onHandleClick = (edge: EdgeIndex) => () => {
-    /* Dopo un trascinamento il click arriva comunque: qui va ignorato. */
     if (lastTravel.current > 8) return;
     flick(edge === EDGE.right ? 1 : -1);
   };
@@ -394,12 +373,11 @@ export function WorkCarousel() {
     : { clipPath: `url(#${clipId})` };
 
   return (
-
     <div className={styles.wrapper}>
-    <div className={styles.postitContainer}>
-      <div className={styles.postit}> ➜</div>
-      <div className={styles.postit}> ➜</div>
-    </div>
+      <div className={styles.postitContainer}>
+        <div className={styles.postit}> ➜</div>
+        <div className={styles.postit}> ➜</div>
+      </div>
 
       <div className={styles.bg}></div>
       <div className={styles.frame}></div>
@@ -413,11 +391,6 @@ export function WorkCarousel() {
         aria-roledescription="carosello"
         aria-label="Progetti"
       >
-        {/*
-          La maschera è applicata a questo nodo, che resta fermo: lo
-          spostamento parallasse vive sul figlio, altrimenti trascinerebbe
-          anche il `clip-path` e la finestra si muoverebbe con l'immagine.
-        */}
         <div className={styles.cover} style={clipStyle}>
           <motion.div
             className={styles.coverInner}
@@ -449,7 +422,6 @@ export function WorkCarousel() {
                   >
                     Discover
                   </motion.button>
-                  
                 </div>
                 <div className={styles.coverLayer}>
                   <img
