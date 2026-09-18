@@ -15,7 +15,7 @@
     left: 0;
     width: 100%;
     height: min(50svh, 38.8rem);
-    aspect-ratio: 2 / 3.35;
+    aspect-ratio: 2.2 / 3.35;
     max-height: 68svh;
     --hole-r: 14px;
   }
