@@ -204,7 +204,7 @@ export function NavBar() {
           </a>
           <button
             type="button"
-            className={`${styles.menuTrigger} siteBtn`}
+            className={styles.menuTrigger}
             aria-expanded={menuOpen}
             aria-controls={menuId}
             onClick={() => setMenuOpen(true)}
