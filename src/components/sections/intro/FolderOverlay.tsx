@@ -79,34 +79,53 @@ function sealLayout(vw: number, workX: number) {
   };
 }
 
-function hangingPath(x: number, top: number, bottom: number) {
-  const r = 0.01;
-  return `M ${x} ${bottom} L ${x} ${top + r} A ${r} ${r} 0 0 1 ${x} ${top} L ${x} ${top} C ${x} ${top} ${x} ${top} ${x} ${top}`;
+// RESTING STATE FINALE: Da sinistra orizzontale, curva su verso top
+function hangingPath(x: number, top: number, seamY: number) {
+  const turnR = 16;
+  const p0x = -100, p0y = seamY;
+  const p1x = x - turnR, p1y = seamY;
+  const p2x = x, p2y = seamY;
+  const p3x = x, p3y = seamY;
+  const p4x = x, p4y = seamY - turnR;
+  const p5x = x, p5y = top + 1;
+  const p6x = x, p6y = top;
+  const p7x = x, p7y = top;
+  const p8x = x, p8y = top;
+  
+  return `M ${p0x} ${p0y} L ${p1x} ${p1y} C ${p2x} ${p2y} ${p3x} ${p3y} ${p4x} ${p4y} L ${p5x} ${p5y} C ${p6x} ${p6y} ${p7x} ${p7y} ${p8x} ${p8y}`;
 }
 
+// DRAGGING STATE: Totalmente orizzontale da sinistra fino all'ancora, poi fa il loop di trascinamento
 function flexPath(
   stemX: number,
   restEnd: number,
   seamY: number,
-  bottom: number,
-  radius: number,
   anchorX: number,
   offsetX: number,
-  offsetY: number,
+  offsetY: number
 ) {
-  const r = Math.max(12, radius);
-  const elbowX = stemX + r;
+  const turnR = 16;
+  
+  // Segmento base orizzontale
+  const p0x = -100, p0y = seamY;
+  const p1x = stemX - turnR, p1y = seamY;
+  // Per mantenere l'integrità strutturale con hangingPath, usiamo una curva C piatta
+  const p2x = stemX, p2y = seamY;
+  const p3x = stemX, p3y = seamY;
+  const p4x = stemX + turnR, p4y = seamY;
+  const p5x = anchorX, p5y = seamY;
+  
+  // Segmento dinamico in trazione
   const tipX = Math.max(anchorX, restEnd + Math.min(0, offsetX));
   const tipY = seamY + offsetY;
   const span = Math.max(0, tipX - anchorX);
-  const c1x = anchorX + span * 0.28;
-  const c1y = seamY + offsetY * 0.08;
-  const c2x = anchorX + span * 0.68;
-  const c2y = seamY + offsetY * 1.22;
-  return `M ${stemX} ${bottom} L ${stemX} ${seamY + r} A ${r} ${r} 0 0 1 ${elbowX} ${seamY} L ${anchorX} ${seamY} C ${c1x} ${c1y} ${c2x} ${c2y} ${tipX} ${tipY}`;
+  const p6x = anchorX + span * 0.28, p6y = seamY + offsetY * 0.08;
+  const p7x = anchorX + span * 0.68, p7y = seamY + offsetY * 1.22;
+  const p8x = tipX, p8y = tipY;
+  
+  return `M ${p0x} ${p0y} L ${p1x} ${p1y} C ${p2x} ${p2y} ${p3x} ${p3y} ${p4x} ${p4y} L ${p5x} ${p5y} C ${p6x} ${p6y} ${p7x} ${p7y} ${p8x} ${p8y}`;
 }
 
-/** Slice 0–1 from the seal's right edge to its center (the glued pivot). */
 function sliceProgress(
   dragX: number,
   restEnd: number,
@@ -154,7 +173,7 @@ export function FolderOverlay({ viewport, onOpened }: FolderOverlayProps) {
 
   const seamY = vh * SEAM;
   const layout = sealLayout(vw, workX);
-  const { sealSize, sealCenter, sealRight, turnR, restEnd } = layout;
+  const { sealSize, sealCenter, sealRight, restEnd } = layout;
   const threshold = restEnd - sealCenter;
   const maxDrag = Math.max(96, threshold + 16);
 
@@ -162,7 +181,6 @@ export function FolderOverlay({ viewport, onOpened }: FolderOverlayProps) {
     restEnd,
     sealCenter,
     sealRight,
-    turnR,
     seamY,
     workX,
   });
@@ -170,7 +188,6 @@ export function FolderOverlay({ viewport, onOpened }: FolderOverlayProps) {
     restEnd,
     sealCenter,
     sealRight,
-    turnR,
     seamY,
     workX,
   };
@@ -178,7 +195,7 @@ export function FolderOverlay({ viewport, onOpened }: FolderOverlayProps) {
   const dragX = useMotionValue(0);
   const dragY = useMotionValue(0);
   const pathD = useMotionValue(
-    flexPath(workX, restEnd, seamY, vh + OVERLAP, turnR, sealCenter, 0, 0),
+    flexPath(workX, restEnd, seamY, sealCenter, 0, 0),
   );
   const knotOpacity = useMotionValue(1);
 
@@ -200,10 +217,10 @@ export function FolderOverlay({ viewport, onOpened }: FolderOverlayProps) {
   });
   const c2y = useTransform(dragY, (y) => geometryRef.current.seamY + y * 1.22);
 
-  const r = Math.max(12, turnR);
-  const elbowX = workX + r;
-  const bottom = vh + OVERLAP;
-  const flexPathD = useMotionTemplate`M ${workX} ${bottom} L ${workX} ${seamY + r} A ${r} ${r} 0 0 1 ${elbowX} ${seamY} L ${sealCenter} ${seamY} C ${c1x} ${c1y} ${c2x} ${c2y} ${tipX} ${tipY}`;
+  const turnR = 16;
+  
+  // Il template segue alla virgola i punti generati da flexPath
+  const flexPathD = useMotionTemplate`M -100 ${seamY} L ${workX - turnR} ${seamY} C ${workX} ${seamY} ${workX} ${seamY} ${workX + turnR} ${seamY} L ${sealCenter} ${seamY} C ${c1x} ${c1y} ${c2x} ${c2y} ${tipX} ${tipY}`;
 
   useEffect(() => {
     const node = overlayRef.current;
@@ -228,14 +245,12 @@ export function FolderOverlay({ viewport, onOpened }: FolderOverlayProps) {
         workX,
         restEnd,
         seamY,
-        vh + OVERLAP,
-        turnR,
         sealCenter,
         dragX.get(),
-        dragY.get(),
+        dragY.get()
       ),
     );
-  }, [dragX, dragY, pathD, restEnd, sealCenter, seamY, turnR, vh, workX]);
+  }, [dragX, dragY, pathD, restEnd, sealCenter, seamY, workX]);
 
   const topClip = useTransform(dragX, (x) => {
     const { restEnd: start, sealRight: right, sealCenter: anchor } =
@@ -259,7 +274,7 @@ export function FolderOverlay({ viewport, onOpened }: FolderOverlayProps) {
     const rest = measureWorkThreadX();
     animate(
       pathD,
-      hangingPath(rest, STRING_REST_TOP, vh + OVERLAP),
+      hangingPath(rest, STRING_REST_TOP, seamY),
       DROP_SPRING,
     );
     window.setTimeout(() => {
@@ -413,8 +428,6 @@ export function FolderOverlay({ viewport, onOpened }: FolderOverlayProps) {
           }
         }}
       >
-        {/* <span className={styles.handleHit} /> */}
-        {/* <span className={styles.pullTag}>Pull</span> */}
       </motion.div>
 
       {torn ? null : (
@@ -435,7 +448,6 @@ function SealFace() {
   return (
     <div className={styles.sealFace}>
       <span className={styles.sealRing} />
-      
     </div>
   );
 }

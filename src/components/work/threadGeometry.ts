@@ -278,16 +278,24 @@ export function buildTails(quad: Quad, size: Size, room: TailRoom): Tails {
     Entrata: scende da poco sopra la sezione Work (un accenno nell'intro,
     non tutto il documento) e si infila nella puntina alta a sinistra.
   */
-  const bend = Math.min(160, Math.max(48, room.up * 0.45));
+  const rise = Math.min(160, Math.max(48, room.up * 0.45));
+  const entryRadius = clamp(
+    Math.min(rise * 0.5, (top.x + room.left) * 0.55, 140),
+    32,
+    140
+  );
+  
+  const entryTurnY = top.y - rise;
+  const entryElbow = { x: top.x - entryRadius, y: entryTurnY };
+  const entryCenter = { x: entryElbow.x, y: entryTurnY + entryRadius };
+
   const entry = [
-    { x: top.x, y: -room.up },
-    ...sampleCubic(
-      { x: top.x, y: top.y - bend },
-      { x: top.x, y: top.y - bend * 0.45 },
-      { x: top.x, y: top.y - bend * 0.18 },
-      top,
-      12,
-    ),
+    { x: -room.left, y: entryTurnY },
+    entryElbow,
+    // Da -90° (alto) a 0° (destra) rispetto al centro: 
+    // crea il raccordo orizzontale -> verticale
+    ...sampleArc(entryCenter, entryRadius, -Math.PI / 2, 0, 12),
+    top,
   ];
 
   /*

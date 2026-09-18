@@ -16,7 +16,6 @@ function HeroSheet() {
       <div className={styles.sheet}>
         <div className={styles.sheetInner}>
           
-          
         </div>
       </div>
     </div>
@@ -32,7 +31,24 @@ function BridgeThread({
   height: number;
   x: number;
 }) {
-  const d = `M ${x} ${STRING_REST_TOP} L ${x} ${height + THREAD_OVERLAP}`;
+  const SEAM = 0.7;
+  const seamY = height * SEAM;
+  const top = STRING_REST_TOP;
+  const turnR = 16;
+  
+  // Da sinistra (-100) orizzontale fino a 'x', curva verso l'alto, e sale dritto.
+  const p0x = -100, p0y = seamY;
+  const p1x = x - turnR, p1y = seamY;
+  const p2x = x, p2y = seamY;
+  const p3x = x, p3y = seamY;
+  const p4x = x, p4y = seamY - turnR;
+  const p5x = x, p5y = top + 1;
+  const p6x = x, p6y = top;
+  const p7x = x, p7y = top;
+  const p8x = x, p8y = top;
+
+  const d = `M ${p0x} ${p0y} L ${p1x} ${p1y} C ${p2x} ${p2y} ${p3x} ${p3y} ${p4x} ${p4y} L ${p5x} ${p5y} C ${p6x} ${p6y} ${p7x} ${p7y} ${p8x} ${p8y}`;
+
   return (
     <div className={styles.bridge} aria-hidden="true">
       <PullThread
