@@ -429,7 +429,23 @@
   .paper {
     padding: 1.25rem 1.1rem 1.4rem;
     gap: 0.65rem;
+
+    p {
+      font-size: clamp(0.85rem, 2.5vw, 1rem);
+    }
+    h3 {
+      font-size: 1.1rem;
+    }
   }
+
+  .letterhead {
+    display: none;
+  }
+
+  .rule {
+    display: none;
+  }
+
 
   .stamp {
     width: 3.2rem;

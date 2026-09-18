@@ -11,6 +11,24 @@
   z-index: 400;
 }
 
+.instructions{
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  width: min(90%, 40vw);
+  color: #830C0C;
+  font-family: var(--font-pally);
+  text-transform: uppercase;
+  font-size: clamp(0.9rem, 2vw, 1.2rem);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  text-align: center;
+  border: 2px solid #830C0C;
+  padding: 0.5rem 0.5rem;
+  border-radius: 0.5rem;
+  top:1rem;
+}
+
 .hero {
   position: relative;
   z-index: 1;
@@ -189,7 +207,7 @@
   border: 2px solid #000000;
   box-shadow: 4px 4px 0 rgba(0, 0, 0, 0.3);
   width: 40vw;
-  height: 45vh;
+  height: 43vh;
 }
 
 .folderLabelInner {
@@ -227,7 +245,7 @@
 }
 
 .middle {
-  height: 180%;
+  height: 170%;
   padding: 1rem;
   display: flex;
   align-items: center;
@@ -235,7 +253,7 @@
 
   h4{
     font-family: var(--font-pally);
-    font-size: clamp(4.5rem, 13.5vw, 9rem); 
+    font-size: clamp(4.5rem, 8.5vw, 9rem); 
     letter-spacing: 0.04em;
     line-height: 1;
     font-weight: 700;
@@ -456,6 +474,8 @@
     inset 0 0 0 3px #faeed7;
   }
 
+
+
   
 
   .pullTag {
@@ -469,9 +489,9 @@
 
   .folderLabel{
     position: absolute;
-    top: 15%;
+    top: 20%;
     left: 50%;
-    height: 40vh;
+    height: 30vh;
     transform: translateX(-50%);
     width: 80vw;
   }
@@ -480,5 +500,13 @@
     h3{
       font-size: clamp(1.4rem, 3vw, 2.2rem);
     }
+  }
+
+  .instructions{
+    font-size: 1rem;
+    display:block;
+    width: 70%;
+    top:auto;
+    bottom: 7rem;
   }
 }
