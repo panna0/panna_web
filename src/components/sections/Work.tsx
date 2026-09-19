@@ -14,7 +14,7 @@ export function Work() {
     */
     <Section
       id={SECTION_IDS.work}
-      className="flex flex-col px-0 pt-24 pb-0 md:px-0"
+      className="flex flex-col px-0 pb-0 md:px-0"
     >
       <div className={styles.titleContainer}>
         <p className={styles.description}>
