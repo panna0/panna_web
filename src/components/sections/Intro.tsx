@@ -12,9 +12,18 @@ const THREAD_OVERLAP = 72;
 
 function HeroSheet() {
   return (
-    <div className={styles.hero}>
+    <div id={"id"} className={styles.hero}>
       <div className={styles.sheet}>
         <div className={styles.sheetInner}>
+          <h1 className={styles.sheetTitle}>Ariadne Thread</h1>
+          <h3 className={styles.sheetSubtitle}>[ a-ri-ad-ne’s thread ] noun • <span>English</span></h3>
+          <p className={styles.sheetDescription}>
+            1.  <span>Mythology</span> A guiding clew given to Theseus to find his way out of a complex labyrinth.
+            <br/>
+            2.  <span>Digital Design</span> The act of untangling complexity to build clear, intuitive user paths.
+            <br/>
+            3. <span>My workspace</span> The guide through what you are about to explore..
+          </p>
           
         </div>
       </div>

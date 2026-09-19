@@ -52,12 +52,12 @@
   align-items: stretch;
   background-color: #faeed7;
   border: 2px solid #000000;
-  border-radius: 2rem;
+  border-radius: 2rem 0 0 2rem;
   box-shadow: 8px 8px 0 rgba(0, 0, 0, 0.3);
   overflow: hidden;
 }
 
-.sheet::before {
+/* .sheet::before {
   content: "";
   position: absolute;
   inset: 0;
@@ -70,7 +70,7 @@
       transparent 27px,
       rgba(213, 200, 173, 0.35) 28px
     );
-}
+} */
 
 .sheetInner {
   position: relative;
@@ -79,9 +79,9 @@
   box-sizing: border-box;
   width: 100%;
   flex-direction: column;
-  align-items: center;
+  align-items: left;
   justify-content: space-between;
-  padding: clamp(2rem, 8vh, 5rem) clamp(1.5rem, 6vw, 5rem);
+  padding: 7rem 2rem;
   border: 3px solid #d5c8ad;
   margin: 1rem;
   border-radius: 1rem;
@@ -452,16 +452,73 @@
   cursor: grabbing;
 }
 
+.sheetTitle{
+  font-family: var(--font-pally);
+  font-size: 5rem;
+  font-weight: 700;
+}
+
+.sheetSubtitle{
+  font-family: var(--font-pally);
+  font-size: 2rem;
+  font-weight: 400;
+  line-height: 1;
+  margin-bottom: 1rem;
+  
+  span{
+    font-family: var(--font-pally);
+    font-size: 2rem;
+    font-weight: 400;
+    font-style: italic;
+    line-height: 1;
+  }
+}
+
+.sheetDescription{
+  font-family: var(--font-pally);
+  font-size: 1.1rem;
+  font-weight: 400;
+  line-height: 1.5;
+
+  span{
+    font-weight: 700;
+  }
+}
+
+
 @media (max-width: 768px) {
   .hero {
     padding: 5.75rem 0.85rem 1.5rem;
     width: 90%;
-    height: 60%;
+    height: 70%;
+    min-height: 60svh;
   }
 
+  .sheetTitle{
+    font-size: 2rem;
+  }
+
+  .sheetSubtitle{
+    font-size: 0.9rem;
+
+    span{
+      font-size: 0.9rem;
+    }
+  }
+
+  .sheetDescription{
+    font-size: 0.85rem;
+    line-height: 1.35;
+
+    span{
+      font-size: 0.85rem;
+    }
+  }
+
+  
   .sheetInner {
     margin: 0.65rem;
-    padding: 1.4rem 1rem 1.6rem;
+    padding: 6rem 1rem 6rem 4rem;
   }
 
   .stamp {
@@ -508,5 +565,10 @@
     width: 70%;
     top:auto;
     bottom: 7rem;
+  }
+
+  .sheet{
+    height: 50vh;
+    min-height: auto;
   }
 }
