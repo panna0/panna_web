@@ -113,6 +113,14 @@
     max-width: 100%;
   }
 
+  .rail {
+    height: 23px;
+  }
+
+  .leadIn {
+    height: 25px;
+  }
+
   .scroller {
     width: 100%;
     max-width: 100%;
