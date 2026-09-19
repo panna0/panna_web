@@ -7,7 +7,7 @@ export function Services() {
   return (
     <Section
       id={SECTION_IDS.services}
-      className="flex flex-col px-0 pt-24 pb-0 md:px-0"
+      className="flex flex-col px-0 pt-24 pb-0 md:px-0 mt-20"
     >
     <div className={styles.titleContainer}>
       <h2 className={styles.title}>
