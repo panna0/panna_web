@@ -111,9 +111,9 @@ export default function Letter({
               Got a project in mind? Let's follow the thread and bring it to life.
               </p>
               <h3>Mail:</h3>
-              <p> infopan@gmail.com</p>
+              <p> aripanna.ferri@gmail.com</p>
               <a
-                href="mailto:infopan@gmail.com"
+                href="mailto: aripanna.ferri@gmail.com"
                 className={`${styles.button} siteBtn`}
                 onClick={(event) => event.stopPropagation()}
               >
