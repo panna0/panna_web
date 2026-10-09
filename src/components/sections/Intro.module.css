@@ -11,22 +11,30 @@
   z-index: 400;
 }
 
-.instructions{
+.hintPostit {
   position: absolute;
-  left: 50%;
-  transform: translateX(-50%);
-  width: min(90%, 40vw);
-  color: #830C0C;
+  top: calc(70% + 3.15rem);
+  right: 1.5rem;
+  left: auto;
+  z-index: 6;
+  margin: 0;
+  width: min(15rem, 28vw);
+  padding: 0.95rem 0.85rem 0.8rem;
+  background:
+    linear-gradient(#d0af5c, #d0af5c) top / 100% 9px no-repeat,
+    #e9c46a;
+  border: 2px solid #000000;
+  box-shadow: 5px 5px 0 rgba(23, 23, 23, 0.3);
+  color: #171717;
   font-family: var(--font-pally);
-  text-transform: uppercase;
-  font-size: clamp(0.9rem, 2vw, 1.2rem);
+  font-size: 0.82rem;
   font-weight: 700;
-  letter-spacing: -0.02em;
+  letter-spacing: 0.04em;
+  line-height: 1.25;
   text-align: center;
-  border: 2px solid #830C0C;
-  padding: 0.5rem 0.5rem;
-  border-radius: 0.5rem;
-  top:1rem;
+  text-transform: uppercase;
+  transform: rotate(4deg);
+  pointer-events: none;
 }
 
 .hero {
@@ -40,21 +48,50 @@
   align-items: stretch;
   justify-content: stretch;
   padding: 5.5rem 1.25rem 2rem;
-  
+  overflow: visible;
 }
 
+.book {
+  --cover-pad: 1rem;
+  display: flex;
+  box-sizing: border-box;
+  flex-shrink: 0;
+  align-items: stretch;
+  width: calc(200% + 2 * var(--cover-pad));
+  height: calc(100% + 2 * var(--cover-pad));
+  margin: calc(-1 * var(--cover-pad)) 0 calc(-1 * var(--cover-pad))
+    calc(-100% - var(--cover-pad));
+  padding: var(--cover-pad);
+  background-color: var(--magenta);
+  border: 2px solid #000000;
+  border-radius: 2rem;
+  box-shadow: 8px 8px 0 rgba(0, 0, 0, 0.3);
+}
+
+.leftPage,
 .sheet {
   position: relative;
   display: flex;
-  width: 100%;
-  min-height: calc(80svh - 7.5rem);
-  flex: 1;
+  min-width: 0;
+  min-height: 0;
+  flex: 1 1 0;
   align-items: stretch;
+  align-self: stretch;
   background-color: #faeed7;
   border: 2px solid #000000;
-  border-radius: 2rem 0 0 2rem;
-  box-shadow: 8px 8px 0 rgba(0, 0, 0, 0.3);
   overflow: hidden;
+}
+
+.leftPage {
+  border-right: none;
+  border-radius: 2rem 0 0 2rem;
+  box-shadow: inset -14px 0 18px -14px rgba(0, 0, 0, 0.35);
+}
+
+.sheet {
+  z-index: 1;
+  border-radius: 0 2rem 2rem 0;
+  box-shadow: inset 14px 0 18px -14px rgba(0, 0, 0, 0.35);
 }
 
 /* .sheet::before {
@@ -544,6 +581,16 @@
     height: 200px;
   }
 
+  .hintPostit {
+    top: calc(70% + 5rem);
+    right: auto;
+    left: 50%;
+    width: min(14rem, 78vw);
+    padding: 0.8rem 0.7rem 0.65rem;
+    font-size: 0.68rem;
+    transform: translateX(-50%) rotate(-3deg);
+  }
+
   .folderLabel{
     position: absolute;
     top: 20%;
@@ -559,16 +606,16 @@
     }
   }
 
-  .instructions{
-    font-size: 1rem;
-    display:block;
-    width: 70%;
-    top:auto;
-    bottom: 7rem;
+
+  .book {
+    --cover-pad: 0.7rem;
   }
 
-  .sheet{
-    height: 50vh;
-    min-height: auto;
+  .leftPage {
+    border-radius: 1.25rem 0 0 1.25rem;
+  }
+
+  .sheet {
+    border-radius: 0 1.25rem 1.25rem 0;
   }
 }

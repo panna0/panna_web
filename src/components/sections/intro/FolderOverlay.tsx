@@ -352,6 +352,12 @@ export function FolderOverlay({ viewport, onOpened }: FolderOverlayProps) {
         transition={PANEL_SPRING}
       />
 
+      {torn ? null : (
+        <p className={styles.hintPostit}>
+          Pull the string and tear the seal to begin
+        </p>
+      )}
+
       <div className={styles.stringLayer} aria-hidden="true">
         <PullThread
           className={styles.stringSvg}
