@@ -375,8 +375,8 @@ export function WorkCarousel() {
   return (
     <div className={styles.wrapper}>
       <div className={styles.postitContainer}>
-        <div className={styles.postit}> ➜</div>
-        <div className={styles.postit}> ➜</div>
+        <div className={styles.postit} onClick={onHandleClick(EDGE.left)}> ➜</div>
+        <div className={styles.postit} onClick={onHandleClick(EDGE.right)}> ➜</div>
       </div>
 
       <div className={styles.bg}></div>
