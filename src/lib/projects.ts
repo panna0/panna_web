@@ -10,6 +10,8 @@ export type Project = {
   images: string[];
   /** Accento UI (bottone Discover). */
   color1: string;
+  /** Sito live del progetto, se esiste. */
+  url?: string;
 };
 
 function shots(folder: string, count = 5) {
@@ -21,7 +23,7 @@ export const PROJECTS: Project[] = [
     id: "adhdruid",
     title: "ADHDruid",
     discipline: "Game, Illustration",
-    year: "2025",
+    year: "2026",
     description:
       "Identità e illustrazione per un rito da tavolo: carte, gemme e un’app che tiene il calderone. Un mondo boschivo, magico e un po’ disordinato, come deve essere.",
     cover: "/adhdruid/1.png",
@@ -43,12 +45,13 @@ export const PROJECTS: Project[] = [
     id: "coby",
     title: "Coby",
     discipline: "Web, Art Direction",
-    year: "2025",
+    year: "2026",
     description:
       "Sito e direzione artistica per un portfolio fotografico: nero, pietra, ritratto. Lo schermo è un foglio che lascia parlare prima le immagini.",
     cover: "/coby/1.png",
     images: shots("coby"),
     color1: "#D8D8D8",
+    url: "https://communicatedby.com",
   },
   {
     id: "commander",

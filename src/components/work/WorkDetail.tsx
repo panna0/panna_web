@@ -30,6 +30,20 @@ export function WorkDetail({ project }: WorkDetailProps) {
                 <dt>Date</dt>
                 <dd>{project.year}</dd>
               </div>
+              {project.url ? (
+                <div className={styles.metaRow}>
+                  <dt>Website</dt>
+                  <dd>
+                    <a
+                      href={project.url}
+                      target="_blank"
+                      rel="noreferrer"
+                    >
+                      {project.url.replace(/^https?:\/\//, "").replace(/\/$/, "")}
+                    </a>
+                  </dd>
+                </div>
+              ) : null}
             </dl>
 
             <div className={styles.descriptionBlock}>
