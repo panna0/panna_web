@@ -7,6 +7,7 @@ import {
   useState,
   type CSSProperties,
   type KeyboardEvent as ReactKeyboardEvent,
+  type MouseEvent as ReactMouseEvent,
   type PointerEvent as ReactPointerEvent,
 } from "react";
 import {
@@ -146,6 +147,11 @@ function handleBox(frame: Frame, edge: EdgeIndex): CSSProperties {
   return { left: centerX - width / 2, top, width, height: bottom - top };
 }
 
+/** I gestori leggono il lato da `data-edge`, così in render non si crea nessuna closure. */
+function edgeOf(target: HTMLElement): EdgeIndex {
+  return target.dataset.edge === "right" ? EDGE.right : EDGE.left;
+}
+
 function quadBounds(quad: Quad) {
   const left = Math.min(quad[0].x, quad[1].x, quad[2].x, quad[3].x);
   const right = Math.max(quad[0].x, quad[1].x, quad[2].x, quad[3].x);
@@ -177,6 +183,10 @@ export function WorkCarousel() {
   const gesture = useRef<Gesture | null>(null);
   const settle = useRef<ReturnType<typeof animate>[]>([]);
   const lastTravel = useRef(0);
+  const hintX = useMotionValue(0);
+  const hintY = useMotionValue(0);
+  const [hintVisible, setHintVisible] = useState(false);
+  const [hintSide, setHintSide] = useState<EdgeIndex>(EDGE.left);
 
   const coverX = useTransform(pullX, (value: number) =>
     reduceMotion ? 0 : value * 0.22,
@@ -275,36 +285,54 @@ export function WorkCarousel() {
     pluck.finished.then(() => advance(direction), () => {});
   };
 
-  const beginPull =
-    (edge: EdgeIndex) => (event: ReactPointerEvent<HTMLButtonElement>) => {
-      const stage = stageRef.current;
-      if (!frame || !stage || gesture.current) return;
-      if (event.pointerType === "mouse" && event.button !== 0) return;
+  const showHint = (event: ReactPointerEvent<HTMLButtonElement>) => {
+    if (event.pointerType !== "mouse" || gesture.current) return;
+    hintX.set(event.clientX);
+    hintY.set(event.clientY);
+    setHintSide(edgeOf(event.currentTarget));
+    setHintVisible(true);
+  };
 
-      const rect = stage.getBoundingClientRect();
-      stopSettle();
-      grab.current = {
-        edge,
-        t: edgeParam(frame.quad, edge, {
-          x: event.clientX - rect.left,
-          y: event.clientY - rect.top,
-        }),
-      };
-      gesture.current = {
-        pointerId: event.pointerId,
-        edge,
-        originX: event.clientX,
-        originY: event.clientY,
-        outward: 0,
-        travel: 0,
-      };
-      lastTravel.current = 0;
-      capturePointer(event.currentTarget, event.pointerId);
+  const hideHint = () => setHintVisible(false);
+
+  const beginPull = (event: ReactPointerEvent<HTMLButtonElement>) => {
+    const stage = stageRef.current;
+    if (!frame || !stage || gesture.current) return;
+    if (event.pointerType === "mouse" && event.button !== 0) return;
+    hideHint();
+
+    const edge = edgeOf(event.currentTarget);
+    const rect = stage.getBoundingClientRect();
+    stopSettle();
+    grab.current = {
+      edge,
+      t: edgeParam(frame.quad, edge, {
+        x: event.clientX - rect.left,
+        y: event.clientY - rect.top,
+      }),
     };
+    gesture.current = {
+      pointerId: event.pointerId,
+      edge,
+      originX: event.clientX,
+      originY: event.clientY,
+      outward: 0,
+      travel: 0,
+    };
+    lastTravel.current = 0;
+    capturePointer(event.currentTarget, event.pointerId);
+  };
 
   const continuePull = (event: ReactPointerEvent<HTMLButtonElement>) => {
     const active = gesture.current;
-    if (!frame || !active || active.pointerId !== event.pointerId) return;
+    if (!active) {
+      if (event.pointerType === "mouse") {
+        hintX.set(event.clientX);
+        hintY.set(event.clientY);
+      }
+      return;
+    }
+    if (!frame || active.pointerId !== event.pointerId) return;
 
     const raw = event.clientX - active.originX;
     const outward = active.edge === EDGE.right ? raw : -raw;
@@ -341,9 +369,19 @@ export function WorkCarousel() {
     }
   };
 
-  const onHandleClick = (edge: EdgeIndex) => () => {
+  const releasePull = (event: ReactPointerEvent<HTMLButtonElement>) => {
+    endPull(event);
+    showHint(event);
+  };
+
+  const cancelPull = (event: ReactPointerEvent<HTMLButtonElement>) => {
+    hideHint();
+    endPull(event);
+  };
+
+  const onHandleClick = (event: ReactMouseEvent<HTMLElement>) => {
     if (lastTravel.current > 8) return;
-    flick(edge === EDGE.right ? 1 : -1);
+    flick(edgeOf(event.currentTarget) === EDGE.right ? 1 : -1);
   };
 
   const onKeyDown = (event: ReactKeyboardEvent<HTMLDivElement>) => {
@@ -375,8 +413,8 @@ export function WorkCarousel() {
   return (
     <div className={styles.wrapper}>
       <div className={styles.postitContainer}>
-        <div className={styles.postit} onClick={onHandleClick(EDGE.left)}> ➜</div>
-        <div className={styles.postit} onClick={onHandleClick(EDGE.right)}> ➜</div>
+        <div className={styles.postit} data-edge="left" onClick={onHandleClick}> ➜</div>
+        <div className={styles.postit} data-edge="right" onClick={onHandleClick}> ➜</div>
       </div>
 
       <div className={styles.bg}></div>
@@ -456,19 +494,36 @@ export function WorkCarousel() {
                 type="button"
                 className={styles.handle}
                 style={handleBox(frame, edge)}
+                data-edge={edge === EDGE.right ? "right" : "left"}
                 aria-label={
                   edge === EDGE.right
                     ? "Tira il filo a destra: progetto successivo"
                     : "Tira il filo a sinistra: progetto precedente"
                 }
-                onPointerDown={beginPull(edge)}
+                onPointerEnter={showHint}
+                onPointerLeave={hideHint}
+                onPointerDown={beginPull}
                 onPointerMove={continuePull}
-                onPointerUp={endPull}
-                onPointerCancel={endPull}
-                onClick={onHandleClick(edge)}
+                onPointerUp={releasePull}
+                onPointerCancel={cancelPull}
+                onClick={onHandleClick}
               />
             ))
           : null}
+
+        <motion.div
+          className={styles.handleHint}
+          data-side={hintSide === EDGE.right ? "right" : "left"}
+          data-visible={hintVisible}
+          style={{ x: hintX, y: hintY }}
+          aria-hidden="true"
+        >
+          <span className={styles.handleHintCard}>
+            {hintSide === EDGE.right
+              ? "Pull the thread outward to continue"
+              : "Pull the thread outward to go back"}
+          </span>
+        </motion.div>
       </div>
     </div>
   );
