@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import {
   animate,
   motion,
@@ -169,7 +169,6 @@ export function FolderOverlay({ viewport, onOpened }: FolderOverlayProps) {
 
   const vw = size.width;
   const vh = size.height;
-  sizeRef.current = size;
 
   const seamY = vh * SEAM;
   const layout = sealLayout(vw, workX);
@@ -184,13 +183,15 @@ export function FolderOverlay({ viewport, onOpened }: FolderOverlayProps) {
     seamY,
     workX,
   });
-  geometryRef.current = {
-    restEnd,
-    sealCenter,
-    sealRight,
-    seamY,
-    workX,
-  };
+  useLayoutEffect(() => {
+    geometryRef.current = {
+      restEnd,
+      sealCenter,
+      sealRight,
+      seamY,
+      workX,
+    };
+  }, [restEnd, sealCenter, sealRight, seamY, workX]);
 
   const dragX = useMotionValue(0);
   const dragY = useMotionValue(0);
@@ -314,6 +315,7 @@ export function FolderOverlay({ viewport, onOpened }: FolderOverlayProps) {
     <motion.div
       ref={overlayRef}
       className={styles.overlay}
+      data-intro-overlay=""
       role="dialog"
       aria-modal="true"
       aria-label="Archival folder. Pull the string left to break the seal."

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useSyncExternalStore } from "react";
 import { AnimatePresence, useReducedMotion } from "framer-motion";
 import { SECTION_IDS } from "@/lib/navigation";
 import { Section } from "@/components/Section";
@@ -9,6 +9,44 @@ import { PullThread } from "./intro/PullThread";
 import styles from "./Intro.module.css";
 
 const THREAD_OVERLAP = 72;
+const INTRO_STORAGE_KEY = "panna-intro-opened";
+
+/** Letto una volta sola: lo snapshot di `useSyncExternalStore` deve restare stabile. */
+let introOpened: boolean | null = null;
+
+function getIntroOpened() {
+  if (introOpened === null) {
+    try {
+      introOpened =
+        document.documentElement.dataset.introOpened === "1" ||
+        window.localStorage.getItem(INTRO_STORAGE_KEY) === "1";
+    } catch {
+      introOpened = false;
+    }
+  }
+  return introOpened;
+}
+
+function markIntroOpened() {
+  introOpened = true;
+  try {
+    window.localStorage.setItem(INTRO_STORAGE_KEY, "1");
+  } catch {
+    /* Navigazione privata: l'intro tornerà alla prossima visita. */
+  }
+}
+
+function subscribeNothing() {
+  return () => {};
+}
+
+function getFalse() {
+  return false;
+}
+
+function getTrue() {
+  return true;
+}
 
 function HeroSheet() {
   return (
@@ -76,9 +114,14 @@ function BridgeThread({
 
 export function Intro() {
   const reduceMotion = useReducedMotion();
-  const [ready, setReady] = useState(false);
-  const [sealed, setSealed] = useState(true);
-  const [scrollLocked, setScrollLocked] = useState(true);
+  const ready = useSyncExternalStore(subscribeNothing, getTrue, getFalse);
+  const storedOpen = useSyncExternalStore(
+    subscribeNothing,
+    getIntroOpened,
+    getFalse,
+  );
+  const [torn, setTorn] = useState(false);
+  const sealed = !storedOpen && !torn && reduceMotion !== true;
   const [viewport, setViewport] = useState({ width: 1200, height: 800 });
   const [sectionSize, setSectionSize] = useState({ width: 1200, height: 800 });
   const [bridgeX, setBridgeX] = useState(264);
@@ -95,26 +138,19 @@ export function Intro() {
         });
       }
     };
-    update();
-    setReady(true);
+    const first = requestAnimationFrame(update);
     window.addEventListener("resize", update);
     const observer = section ? new ResizeObserver(update) : null;
     if (section && observer) observer.observe(section);
     return () => {
+      cancelAnimationFrame(first);
       window.removeEventListener("resize", update);
       observer?.disconnect();
     };
   }, []);
 
   useEffect(() => {
-    if (reduceMotion) {
-      setSealed(false);
-      setScrollLocked(false);
-    }
-  }, [reduceMotion]);
-
-  useEffect(() => {
-    if (!scrollLocked) return;
+    if (!sealed) return;
     const html = document.documentElement;
     const body = document.body;
     const previous = {
@@ -135,7 +171,7 @@ export function Intro() {
       body.style.overscrollBehavior = previous.bodyOverscroll;
       body.removeAttribute("data-intro-sealed");
     };
-  }, [scrollLocked]);
+  }, [sealed]);
 
   return (
     <Section
@@ -153,7 +189,6 @@ export function Intro() {
       <AnimatePresence
         onExitComplete={() => {
           setBridgeX(measureWorkThreadX());
-          setScrollLocked(false);
         }}
       >
         {sealed ? (
@@ -161,10 +196,13 @@ export function Intro() {
             <FolderOverlay
               key="folder-overlay"
               viewport={viewport}
-              onOpened={() => setSealed(false)}
+              onOpened={() => {
+                markIntroOpened();
+                setTorn(true);
+              }}
             />
           ) : (
-            <div className={styles.overlay} aria-hidden="true">
+            <div className={styles.overlay} data-intro-overlay="" aria-hidden="true">
               <div className={`${styles.panel} ${styles.topPanel}`} />
               <div className={`${styles.panel} ${styles.bottomPanel}`} />
             </div>

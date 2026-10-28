@@ -108,7 +108,7 @@ export default function Letter({
               <h2 className={styles.letterhead}>HI!</h2>
               <span className={styles.rule} aria-hidden="true" />
               <p>
-              Got a project in mind? Let's follow the thread and bring it to life.
+              Got a project in mind? Let&apos;s follow the thread and bring it to life.
               </p>
               <h3>Mail:</h3>
               <p> aripanna.ferri@gmail.com</p>

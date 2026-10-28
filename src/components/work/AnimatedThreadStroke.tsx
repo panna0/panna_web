@@ -1,6 +1,10 @@
 "use client"; // Necessario per framer-motion
 
-import { motion, type SVGMotionProps } from "framer-motion";
+import {
+  motion,
+  type SVGMotionProps,
+  type TargetAndTransition,
+} from "framer-motion";
 import {
   offsetPolyline,
   polylineToPath,
@@ -37,6 +41,7 @@ export function AnimatedThreadStroke({
     offsetPolyline(points, -(thread.thickness - thread.shade) / 2),
   );
   const band = thread.thickness + thread.outline * 2;
+  const extra = (motionProps.animate ?? {}) as TargetAndTransition;
 
   return (
     <g fill="none" strokeLinejoin="round" strokeLinecap="round">
@@ -45,32 +50,32 @@ export function AnimatedThreadStroke({
           transform="translate(6 12)"
           strokeWidth={band}
           style={{ stroke: "var(--thread-shadow)" }}
-          animate={{ d: center, ...(motionProps.animate as any) }}
+          animate={{ d: center, ...extra }}
           {...motionProps}
         />
       ) : null}
       <motion.path
         strokeWidth={band}
         style={{ stroke: "var(--thread-outline)" }}
-        animate={{ d: center, ...(motionProps.animate as any) }}
+        animate={{ d: center, ...extra }}
         {...motionProps}
       />
       <motion.path
         strokeWidth={thread.thickness}
         style={{ stroke: "var(--thread-color)" }}
-        animate={{ d: center, ...(motionProps.animate as any) }}
+        animate={{ d: center, ...extra }}
         {...motionProps}
       />
       <motion.path
         strokeWidth={thread.highlight}
         style={{ stroke: "var(--thread-highlight)" }}
-        animate={{ d: highlight, ...(motionProps.animate as any) }}
+        animate={{ d: highlight, ...extra }}
         {...motionProps}
       />
       <motion.path
         strokeWidth={thread.shade}
         style={{ stroke: "var(--thread-shade)" }}
-        animate={{ d: shade, ...(motionProps.animate as any) }}
+        animate={{ d: shade, ...extra }}
         {...motionProps}
       />
     </g>
